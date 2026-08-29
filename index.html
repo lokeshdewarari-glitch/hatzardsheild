@@ -3,200 +3,1224 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>SafeMine AI Dashboard</title>
+    <title>HazardShield AI Dashboard</title>
 
-<link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 
+
 <body>
+
+
+<!-- =====================================================
+                        HEADER
+===================================================== -->
 
 <header>
 
-<div class="logo">
+    <div class="logo">
 
-<h1>🦺 SafeMine AI</h1>
+        <h1>🦺 HazardShield AI</h1>
 
-<p>Hazard Safety Jacket Monitoring System</p>
+        <p>AI-Powered Hazard Safety Jacket Monitoring System</p>
 
-</div>
+    </div>
 
-<div class="header-right">
 
-<div class="status online">
+    <div class="header-right">
 
-🟢 <span id="device">ESP32 Connected</span>
+        <div class="status online">
 
-</div>
+            🟢 <span id="device">ESP32 Connected</span>
 
-<div class="clock">
+        </div>
 
-🕒 <span id="clock">00:00:00</span>
 
-</div>
+        <div class="clock">
 
-</div>
+            🕒 <span id="clock">00:00:00</span>
+
+        </div>
+
+    </div>
 
 </header>
 
-<section class="worker-panel">
 
-<div class="worker-card">
 
-<h2>👷 Worker Information</h2>
+<!-- =====================================================
+                    NAVIGATION TABS
+===================================================== -->
 
-<p><b>Worker ID :</b> <span id="workerId">Worker-01</span></p>
+<nav class="navbar">
 
-<p><b>Name :</b> Rahul Kumar</p>
+    <button
+        class="nav-btn active"
+        onclick="showTab('dashboard')">
 
-<p><b>Location :</b> Mine Zone A</p>
+        🏠 Dashboard
 
-<p><b>Battery :</b> <span id="battery">100%</span></p>
+    </button>
 
-<p><b>Helmet :</b> Connected</p>
 
-</div>
+    <button
+        class="nav-btn"
+        onclick="showTab('worker')">
 
-<div class="alert-card">
+        👷 Worker
 
-<h2>🚨 ALERT STATUS</h2>
+    </button>
 
-<h1 id="status">SAFE</h1>
 
-<p id="reason">No Hazard Detected</p>
+    <button
+        class="nav-btn"
+        onclick="showTab('sensors')">
 
-</div>
+        📡 Sensors
+
+    </button>
+
+
+    <button
+        class="nav-btn"
+        onclick="showTab('charts')">
+
+        📈 Charts
+
+    </button>
+
+
+    <button
+        class="nav-btn"
+        onclick="showTab('aiRisk')">
+
+        🤖 AI Risk
+
+    </button>
+
+
+    <button
+        class="nav-btn"
+        onclick="showTab('zones')">
+
+        🗺️ Zones
+
+    </button>
+
+
+    <button
+        class="nav-btn"
+        onclick="showTab('evacuation')">
+
+        🚨 Evacuation
+
+    </button>
+
+
+    <button
+        class="nav-btn"
+        onclick="showTab('alerts')">
+
+        🔔 Alerts
+
+    </button>
+
+</nav>
+
+
+
+<main>
+
+
+<!-- =====================================================
+                    DASHBOARD TAB
+===================================================== -->
+
+<section
+    id="dashboard"
+    class="tab-content active">
+
+
+    <div class="page-title">
+
+        <h2>🏠 Dashboard Overview</h2>
+
+        <p>
+            Real-time mine safety monitoring and overall system status
+        </p>
+
+    </div>
+
+
+
+    <!-- Overall Summary -->
+
+    <div class="overview-grid">
+
+
+        <!-- Safety -->
+
+        <div class="overview-card safety-card">
+
+            <h3>🛡️ Overall Safety</h3>
+
+            <h1 id="status">SAFE</h1>
+
+            <p id="reason">
+                No Hazard Detected
+            </p>
+
+        </div>
+
+
+
+        <!-- AI Risk -->
+
+        <div class="overview-card risk-card">
+
+            <h3>🤖 AI Risk Score</h3>
+
+            <h1>
+
+                <span id="riskScore">0</span>
+
+                <small>/100</small>
+
+            </h1>
+
+            <p id="riskLevel">
+                LOW RISK
+            </p>
+
+        </div>
+
+
+
+        <!-- Prediction -->
+
+        <div class="overview-card">
+
+            <h3>🔮 Predicted Hazard</h3>
+
+            <h2 id="predictedHazard">
+                No Hazard
+            </h2>
+
+            <p>
+
+                Confidence:
+
+                <b id="riskConfidence">
+                    0%
+                </b>
+
+            </p>
+
+        </div>
+
+
+
+        <!-- Latest Alert -->
+
+        <div class="overview-card">
+
+            <h3>🚨 Latest Alert</h3>
+
+            <h2 id="dashboardAlert">
+                No Alerts
+            </h2>
+
+            <p id="dashboardAlertStatus">
+                🟢 SAFE
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =================================================
+                        WORKER SUMMARY
+    ================================================= -->
+
+    <div class="section-card">
+
+        <h2>👷 Worker Information</h2>
+
+
+        <div class="summary-grid">
+
+
+            <div>
+
+                <span>Worker ID</span>
+
+                <b id="workerId">
+                    Worker-01
+                </b>
+
+            </div>
+
+
+            <div>
+
+                <span>Name</span>
+
+                <b>
+                    Rahul Kumar
+                </b>
+
+            </div>
+
+
+            <div>
+
+                <span>Current Zone</span>
+
+                <b id="workerZone">
+                    Zone A
+                </b>
+
+            </div>
+
+
+            <div>
+
+                <span>Battery</span>
+
+                <b id="battery">
+                    100%
+                </b>
+
+            </div>
+
+
+            <div>
+
+                <span>Helmet</span>
+
+                <b>
+                    🟢 Connected
+                </b>
+
+            </div>
+
+
+            <div>
+
+                <span>Device</span>
+
+                <b id="dashboardDevice">
+                    ESP32 Connected
+                </b>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =================================================
+                        SENSOR SUMMARY
+    ================================================= -->
+
+    <div class="section-card">
+
+        <h2>📡 Live Sensor Summary</h2>
+
+
+        <div class="mini-sensors">
+
+
+            <div class="mini-card">
+
+                <span>
+                    🌡 Temperature
+                </span>
+
+                <strong id="dashboardTemp">
+                    0°C
+                </strong>
+
+            </div>
+
+
+            <div class="mini-card">
+
+                <span>
+                    💧 Humidity
+                </span>
+
+                <strong id="dashboardHum">
+                    0%
+                </strong>
+
+            </div>
+
+
+            <div class="mini-card">
+
+                <span>
+                    💨 Gas
+                </span>
+
+                <strong id="dashboardGas">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="mini-card">
+
+                <span>
+                    🌪 Pressure
+                </span>
+
+                <strong id="dashboardPressure">
+                    0 hPa
+                </strong>
+
+            </div>
+
+
+            <div class="mini-card">
+
+                <span>
+                    🚶 Motion
+                </span>
+
+                <strong id="dashboardMotion">
+                    NO
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Recommended Action -->
+
+    <div class="section-card action-summary">
+
+        <h2>
+            💡 Recommended Action
+        </h2>
+
+        <p id="recommendedAction">
+            Normal Monitoring
+        </p>
+
+    </div>
+
 
 </section>
 
-<section class="cards">
 
-<div class="card">
 
-<h3>🌡 Temperature</h3>
+<!-- =====================================================
+                        WORKER TAB
+===================================================== -->
 
-<h1 id="temp">0°C</h1>
+<section
+    id="worker"
+    class="tab-content">
 
-</div>
 
-<div class="card">
+    <div class="page-title">
 
-<h3>💧 Humidity</h3>
+        <h2>
+            👷 Worker Information
+        </h2>
 
-<h1 id="hum">0%</h1>
+        <p>
+            Worker and equipment monitoring
+        </p>
 
-</div>
+    </div>
 
-<div class="card">
 
-<h3>💨 Gas</h3>
 
-<h1 id="gas">0</h1>
+    <div class="worker-detail-card">
 
-</div>
+        <h2>
+            Worker Details
+        </h2>
 
-<div class="card">
 
-<h3>🌪 Pressure</h3>
+        <div class="detail-grid">
 
-<h1 id="pressure">0 hPa</h1>
 
-</div>
+            <div>
 
-<div class="card">
+                <span>
+                    Worker ID
+                </span>
 
-<h3>🚶 Motion</h3>
+                <b id="workerIdDetail">
+                    Worker-01
+                </b>
 
-<h1 id="motion">NO</h1>
+            </div>
 
-</div>
+
+            <div>
+
+                <span>
+                    Name
+                </span>
+
+                <b>
+                    Rahul Kumar
+                </b>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Current Zone
+                </span>
+
+                <b id="workerZoneDetail">
+                    Zone A
+                </b>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Battery
+                </span>
+
+                <b id="workerBattery">
+                    100%
+                </b>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Helmet
+                </span>
+
+                <b>
+                    🟢 Connected
+                </b>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Device
+                </span>
+
+                <b id="workerDevice">
+                    ESP32 Connected
+                </b>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </section>
 
-<section class="graphs">
 
-<div class="graph">
 
-<h2>🌡 Temperature Graph</h2>
+<!-- =====================================================
+                        SENSORS TAB
+===================================================== -->
 
-<canvas id="tempChart"></canvas>
+<section
+    id="sensors"
+    class="tab-content">
 
-</div>
 
-<div class="graph">
+    <div class="page-title">
 
-<h2>💨 Gas Graph</h2>
+        <h2>
+            📡 Live Sensors
+        </h2>
 
-<canvas id="gasChart"></canvas>
+        <p>
+            Real-time environmental and worker data
+        </p>
 
-</div>
+    </div>
 
-<div class="graph">
 
-<h2>🌪 Pressure Graph</h2>
 
-<canvas id="pressureChart"></canvas>
+    <div class="sensor-grid">
 
-</div>
+
+        <div class="sensor-card">
+
+            <h3>
+                🌡 Temperature
+            </h3>
+
+            <h1 id="temp">
+                0°C
+            </h1>
+
+            <p>
+                Environmental temperature
+            </p>
+
+        </div>
+
+
+
+        <div class="sensor-card">
+
+            <h3>
+                💧 Humidity
+            </h3>
+
+            <h1 id="hum">
+                0%
+            </h1>
+
+            <p>
+                Relative humidity
+            </p>
+
+        </div>
+
+
+
+        <div class="sensor-card">
+
+            <h3>
+                💨 Gas
+            </h3>
+
+            <h1 id="gas">
+                0
+            </h1>
+
+            <p>
+                Gas concentration
+            </p>
+
+        </div>
+
+
+
+        <div class="sensor-card">
+
+            <h3>
+                🌪 Pressure
+            </h3>
+
+            <h1 id="pressure">
+                0 hPa
+            </h1>
+
+            <p>
+                Atmospheric pressure
+            </p>
+
+        </div>
+
+
+
+        <div class="sensor-card">
+
+            <h3>
+                🚶 Motion
+            </h3>
+
+            <h1 id="motion">
+                NO
+            </h1>
+
+            <p>
+                Worker movement status
+            </p>
+
+        </div>
+
+    </div>
 
 </section>
-<section class="history">
 
-<h2>📋 Alert History</h2>
 
-<table>
 
-<thead>
+<!-- =====================================================
+                        CHARTS TAB
+===================================================== -->
 
-<tr>
+<section
+    id="charts"
+    class="tab-content">
 
-<th>Time</th>
 
-<th>Worker</th>
+    <div class="page-title">
 
-<th>Alert</th>
+        <h2>
+            📈 Sensor Analytics
+        </h2>
 
-<th>Status</th>
+        <p>
+            Real-time sensor trends from Firebase
+        </p>
 
-</tr>
+    </div>
 
-</thead>
 
-<tbody id="historyTable">
 
-<tr>
+    <div class="graphs">
 
-<td>--:--</td>
 
-<td>Worker-01</td>
+        <div class="graph">
 
-<td>No Alerts</td>
+            <h2>
+                🌡 Temperature Graph
+            </h2>
 
-<td>🟢 SAFE</td>
+            <canvas id="tempChart"></canvas>
 
-</tr>
+        </div>
 
-</tbody>
 
-</table>
+
+        <div class="graph">
+
+            <h2>
+                💨 Gas Graph
+            </h2>
+
+            <canvas id="gasChart"></canvas>
+
+        </div>
+
+
+
+        <div class="graph">
+
+            <h2>
+                🌪 Pressure Graph
+            </h2>
+
+            <canvas id="pressureChart"></canvas>
+
+        </div>
+
+    </div>
 
 </section>
+
+
+
+<!-- =====================================================
+                        AI RISK TAB
+===================================================== -->
+
+<section
+    id="aiRisk"
+    class="tab-content">
+
+
+    <div class="page-title">
+
+        <h2>
+            🤖 AI Risk Assessment
+        </h2>
+
+        <p>
+            Intelligent hazard prediction and risk analysis
+        </p>
+
+    </div>
+
+
+
+    <div class="ai-main-card">
+
+
+        <div class="big-risk-score">
+
+            <span id="riskScoreDetail">
+                0
+            </span>
+
+            <small>
+                /100
+            </small>
+
+        </div>
+
+
+        <h2 id="riskLevelDetail">
+            LOW RISK
+        </h2>
+
+    </div>
+
+
+
+    <div class="ai-grid">
+
+
+        <div class="ai-card">
+
+            <h3>
+                🔮 Predicted Hazard
+            </h3>
+
+            <h2 id="predictedHazardDetail">
+                No Hazard
+            </h2>
+
+        </div>
+
+
+
+        <div class="ai-card">
+
+            <h3>
+                🎯 Prediction Confidence
+            </h3>
+
+            <h2 id="riskConfidenceDetail">
+                0%
+            </h2>
+
+        </div>
+
+
+
+        <div class="ai-card">
+
+            <h3>
+                💡 Recommended Action
+            </h3>
+
+            <h2 id="recommendedActionDetail">
+                Normal Monitoring
+            </h2>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+                        ZONES TAB
+===================================================== -->
+
+<section
+    id="zones"
+    class="tab-content">
+
+
+    <div class="page-title">
+
+        <h2>
+            🗺️ Mine Zone Monitoring
+        </h2>
+
+        <p>
+            Real-time safety status of mine zones
+        </p>
+
+    </div>
+
+
+
+    <div class="zone-grid">
+
+
+        <div
+            class="zone safe"
+            id="zoneA">
+
+            <h2>
+                ZONE A
+            </h2>
+
+            <p id="zoneAStatus">
+                🟢 SAFE
+            </p>
+
+        </div>
+
+
+
+        <div
+            class="zone safe"
+            id="zoneB">
+
+            <h2>
+                ZONE B
+            </h2>
+
+            <p id="zoneBStatus">
+                🟢 SAFE
+            </p>
+
+        </div>
+
+
+
+        <div
+            class="zone safe"
+            id="zoneC">
+
+            <h2>
+                ZONE C
+            </h2>
+
+            <p id="zoneCStatus">
+                🟢 SAFE
+            </p>
+
+        </div>
+
+
+
+        <div
+            class="zone safe"
+            id="zoneD">
+
+            <h2>
+                ZONE D
+            </h2>
+
+            <p id="zoneDStatus">
+                🟢 SAFE
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+                    EVACUATION TAB
+===================================================== -->
+
+<section
+    id="evacuation"
+    class="tab-content">
+
+
+    <div class="page-title">
+
+        <h2>
+            🚨 Evacuation System
+        </h2>
+
+        <p>
+            Emergency evacuation guidance
+        </p>
+
+    </div>
+
+
+
+    <div class="evacuation-status-card">
+
+
+        <h2>
+            Evacuation Status
+        </h2>
+
+
+        <h1 id="evacuationStatus">
+            NO EVACUATION
+        </h1>
+
+
+        <p>
+
+            Current Zone:
+
+            <b id="currentZone">
+                ZONE A
+            </b>
+
+        </p>
+
+
+        <p>
+
+            Recommended Safe Zone:
+
+            <b id="safeZone">
+                ZONE D
+            </b>
+
+        </p>
+
+
+        <p>
+
+            Reason:
+
+            <b id="evacuationReason">
+                No evacuation required.
+            </b>
+
+        </p>
+
+    </div>
+
+
+
+    <!-- Dummy Mine Map -->
+
+    <div class="mine-map-card">
+
+
+        <h2>
+            🗺️ Emergency Evacuation Route
+        </h2>
+
+
+        <div class="mine-map">
+
+
+            <div class="map-zone map-a">
+
+                <strong>
+                    ZONE A
+                </strong>
+
+                <span>
+                    Worker
+                </span>
+
+            </div>
+
+
+            <div class="route route-a">
+                ➜
+            </div>
+
+
+            <div class="map-zone map-b">
+
+                <strong>
+                    ZONE B
+                </strong>
+
+                <span>
+                    Mining Area
+                </span>
+
+            </div>
+
+
+            <div class="route route-b">
+                ➜
+            </div>
+
+
+            <div class="map-zone map-c">
+
+                <strong>
+                    ZONE C
+                </strong>
+
+                <span>
+                    Mining Area
+                </span>
+
+            </div>
+
+
+            <div class="route route-c">
+                ➜
+            </div>
+
+
+            <div class="map-zone map-d">
+
+                <strong>
+                    ZONE D
+                </strong>
+
+                <span>
+                    SAFE AREA
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <p class="map-note">
+
+            ⚠️ Illustrative emergency route —
+            actual route can be connected to mine
+            location data in future.
+
+        </p>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+                        ALERTS TAB
+===================================================== -->
+
+<section
+    id="alerts"
+    class="tab-content">
+
+
+    <div class="page-title">
+
+        <h2>
+            🔔 Alert History
+        </h2>
+
+        <p>
+            Safety alerts and detected events
+        </p>
+
+    </div>
+
+
+
+    <div class="alert-table-container">
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Time
+                    </th>
+
+                    <th>
+                        Worker
+                    </th>
+
+                    <th>
+                        Zone
+                    </th>
+
+                    <th>
+                        Alert
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="historyTable">
+
+                <tr>
+
+                    <td>
+                        --:--
+                    </td>
+
+                    <td>
+                        Worker-01
+                    </td>
+
+                    <td>
+                        Zone A
+                    </td>
+
+                    <td>
+                        No Alerts
+                    </td>
+
+                    <td>
+                        🟢 SAFE
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+
+<!-- =====================================================
+                        FOOTER
+===================================================== -->
 
 <footer>
 
-<p>© 2026 SafeMine AI | Developed by Piyush Bhatt | Graphic Era Hill University</p>
+    <p>
+
+        © 2026 HazardShield AI |
+        Developed by Piyush Bhatt |
+        Graphic Era Hill University
+
+    </p>
 
 </footer>
 
+
+
+<!-- =====================================================
+                    FIREBASE SDK
+===================================================== -->
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+
+<!-- Existing Firebase + Dashboard Logic -->
+
 <script src="script.js"></script>
+
 
 </body>
 
