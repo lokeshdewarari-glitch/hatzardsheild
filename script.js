@@ -1,49 +1,124 @@
 // ==========================================================
-// HAZARDSHIELD AI - FIREBASE + DASHBOARD + AI RISK SYSTEM
+// HAZARDSHIELD AI
+// FIREBASE-FREE DUMMY SAFETY SIMULATION
 // ==========================================================
 
 
 // ==========================================================
-// FIREBASE CONFIGURATION
+// GLOBAL DATA
 // ==========================================================
 
-const firebaseConfig = {
-    apiKey: "AIzaSyAcC2qEXujPTLwy1O7QYNBY6XZHrXqMAw",
-    authDomain: "safemine-smart-helmet.firebaseapp.com",
-    databaseURL: "https://safemine-smart-helmet-default-rtdb.firebaseio.com",
-    projectId: "safemine-smart-helmet",
-    storageBucket: "safemine-smart-helmet.firebasestorage.app",
-    messagingSenderId: "188214160498",
-    appId: "1:188214160498:web:ffea2fbd04bc2e366e66eb",
-    measurementId: "G-L2Y7Z4V3M1"
+let currentWorkerIndex = 0;
+
+let lastAlertKey = "";
+
+let alertHistory = [];
+
+let simulationTick = 0;
+
+
+// ==========================================================
+// 10 WORKERS
+// ==========================================================
+
+const workers = [
+
+    {
+        id: "Worker-01",
+        name: "Rahul Kumar",
+        zone: "A",
+        battery: 96
+    },
+
+    {
+        id: "Worker-02",
+        name: "Amit Sharma",
+        zone: "A",
+        battery: 91
+    },
+
+    {
+        id: "Worker-03",
+        name: "Vikas Rawat",
+        zone: "A",
+        battery: 87
+    },
+
+    {
+        id: "Worker-04",
+        name: "Rohit Singh",
+        zone: "B",
+        battery: 94
+    },
+
+    {
+        id: "Worker-05",
+        name: "Deepak Joshi",
+        zone: "B",
+        battery: 82
+    },
+
+    {
+        id: "Worker-06",
+        name: "Arjun Bisht",
+        zone: "B",
+        battery: 89
+    },
+
+    {
+        id: "Worker-07",
+        name: "Karan Negi",
+        zone: "C",
+        battery: 95
+    },
+
+    {
+        id: "Worker-08",
+        name: "Mohit Thakur",
+        zone: "C",
+        battery: 84
+    },
+
+    {
+        id: "Worker-09",
+        name: "Sahil Rana",
+        zone: "D",
+        battery: 92
+    },
+
+    {
+        id: "Worker-10",
+        name: "Naveen Mehta",
+        zone: "D",
+        battery: 88
+    }
+
+];
+
+
+// ==========================================================
+// SENSOR DATA
+// ==========================================================
+
+let sensorData = {
+
+    temperature: 29,
+
+    humidity: 58,
+
+    gas: 350,
+
+    pressure: 970,
+
+    motion: true,
+
+    heartRate: 72,
+
+    impact: false,
+
+    noMotion: false
+
 };
-
-
-// ==========================================================
-// INITIALIZE FIREBASE
-// ==========================================================
-
-firebase.initializeApp(firebaseConfig);
-
-
-// ==========================================================
-// REALTIME DATABASE
-// ==========================================================
-
-const db = firebase.database();
-
-
-// Existing ESP32 data path
-const safeMineRef = db.ref("SafeMine");
-
-
-// ==========================================================
-// GLOBAL SETTINGS
-// ==========================================================
-
-let currentWorkerZone = "A";
-
-let lastAlert = "";
 
 
 // ==========================================================
@@ -52,96 +127,312 @@ let lastAlert = "";
 
 function showTab(tabId) {
 
-    const tabs = document.querySelectorAll(".tab-content");
+    const tabs =
+        document.querySelectorAll(".tab-content");
 
     tabs.forEach(tab => {
+
         tab.classList.remove("active");
+
     });
 
 
-    const buttons = document.querySelectorAll(".nav-btn");
+    const buttons =
+        document.querySelectorAll(".nav-btn");
 
     buttons.forEach(button => {
+
         button.classList.remove("active");
+
     });
 
 
-    const selectedTab = document.getElementById(tabId);
+    const selected =
+        document.getElementById(tabId);
 
-    if (selectedTab) {
-        selectedTab.classList.add("active");
+    if (selected) {
+
+        selected.classList.add("active");
+
     }
 
 
     buttons.forEach(button => {
 
-        const onclickText =
+        const text =
             button.getAttribute("onclick");
 
         if (
-            onclickText &&
-            onclickText.includes("'" + tabId + "'")
+            text &&
+            text.includes("'" + tabId + "'")
         ) {
+
             button.classList.add("active");
+
         }
 
     });
+
 }
 
 
 // ==========================================================
-// FIREBASE REALTIME DATA
+// HELPER
 // ==========================================================
 
-safeMineRef.on("value", (snapshot) => {
+function setText(id, value) {
 
-    const data = snapshot.val();
+    const element =
+        document.getElementById(id);
+
+    if (element) {
+
+        element.innerText = value;
+
+    }
+
+}
 
 
-    if (!data) {
+// ==========================================================
+// RANDOM NUMBER
+// ==========================================================
 
-        console.log("No Firebase data found");
+function randomBetween(min, max) {
 
-        // If there is no Firebase data,
-        // ESP32 should NOT appear connected.
-        updateDeviceStatus("OFFLINE");
+    return Math.floor(
+        Math.random() * (max - min + 1)
+    ) + min;
 
-        return;
+}
+
+
+// ==========================================================
+// KEEP VALUE IN RANGE
+// ==========================================================
+
+function clamp(value, min, max) {
+
+    return Math.max(
+        min,
+        Math.min(max, value)
+    );
+
+}
+
+
+// ==========================================================
+// GENERATE SENSOR VALUES
+// ==========================================================
+
+function generateDummySensors() {
+
+    simulationTick++;
+
+
+    // ------------------------------------------
+    // NORMAL SMALL CHANGES
+    // ------------------------------------------
+
+    sensorData.temperature =
+        clamp(
+            sensorData.temperature +
+            randomBetween(-2, 2),
+            25,
+            38
+        );
+
+
+    sensorData.humidity =
+        clamp(
+            sensorData.humidity +
+            randomBetween(-3, 3),
+            40,
+            78
+        );
+
+
+    sensorData.gas =
+        clamp(
+            sensorData.gas +
+            randomBetween(-50, 50),
+            200,
+            700
+        );
+
+
+    sensorData.pressure =
+        clamp(
+            sensorData.pressure +
+            randomBetween(-5, 5),
+            900,
+            995
+        );
+
+
+    sensorData.heartRate =
+        clamp(
+            sensorData.heartRate +
+            randomBetween(-4, 4),
+            60,
+            105
+        );
+
+
+    sensorData.motion =
+        Math.random() > 0.12;
+
+
+    sensorData.impact = false;
+
+    sensorData.noMotion = false;
+
+
+    // ======================================================
+    // AUTOMATIC HAZARD SCENARIOS
+    // ======================================================
+
+    // Every ~25 seconds gas danger
+    if (simulationTick % 25 === 0) {
+
+        sensorData.gas = randomBetween(
+            1250,
+            1450
+        );
+
     }
 
 
-    console.log("Firebase Data:", data);
+    // Every ~40 seconds high temperature
+    if (simulationTick % 40 === 0) {
+
+        sensorData.temperature =
+            randomBetween(41, 47);
+
+    }
 
 
-    // ======================================================
-    // SENSOR VALUES
-    // ======================================================
+    // Every ~55 seconds abnormal heart rate
+    if (simulationTick % 55 === 0) {
+
+        sensorData.heartRate =
+            randomBetween(115, 135);
+
+    }
+
+
+    // Every ~70 seconds impact
+    if (simulationTick % 70 === 0) {
+
+        sensorData.impact = true;
+
+    }
+
+
+    // Every ~85 seconds no motion
+    if (simulationTick % 85 === 0) {
+
+        sensorData.motion = false;
+
+        sensorData.noMotion = true;
+
+    }
+
+
+    // Pressure event
+    if (simulationTick % 100 === 0) {
+
+        sensorData.pressure =
+            randomBetween(820, 840);
+
+    }
+
+}
+
+
+// ==========================================================
+// CURRENT WORKER
+// ==========================================================
+
+function getCurrentWorker() {
+
+    return workers[currentWorkerIndex];
+
+}
+
+
+// ==========================================================
+// UPDATE WORKER INFO
+// ==========================================================
+
+function updateCurrentWorker() {
+
+    const worker =
+        getCurrentWorker();
+
+
+    setText(
+        "workerId",
+        worker.id
+    );
+
+
+    setText(
+        "workerName",
+        worker.name
+    );
+
+
+    setText(
+        "workerZone",
+        "Zone " + worker.zone
+    );
+
+
+    setText(
+        "battery",
+        worker.battery + "%"
+    );
+
+
+    setText(
+        "currentZone",
+        "ZONE " + worker.zone
+    );
+
+
+    setText(
+        "heartWorker",
+        worker.id
+    );
+
+}
+
+
+// ==========================================================
+// DASHBOARD SENSOR UI
+// ==========================================================
+
+function updateSensorUI() {
 
     const temperature =
-        Number(data.temperature) || 0;
+        sensorData.temperature;
 
     const humidity =
-        Number(data.humidity) || 0;
+        sensorData.humidity;
 
     const gas =
-        Number(data.gas) || 0;
+        sensorData.gas;
 
     const pressure =
-        Number(data.pressure) || 0;
+        sensorData.pressure;
 
     const motion =
-        data.motion === true;
+        sensorData.motion;
 
-    const impact =
-        data.impact === true;
+    const heart =
+        sensorData.heartRate;
 
-    const noMotion =
-        data.noMotion === true;
-
-
-    // ======================================================
-    // UPDATE MAIN SENSOR VALUES
-    // ======================================================
 
     setText(
         "temp",
@@ -173,9 +464,11 @@ safeMineRef.on("value", (snapshot) => {
     );
 
 
-    // ======================================================
-    // DASHBOARD SENSOR SUMMARY
-    // ======================================================
+    setText(
+        "heartRate",
+        heart + " BPM"
+    );
+
 
     setText(
         "dashboardTemp",
@@ -207,265 +500,109 @@ safeMineRef.on("value", (snapshot) => {
     );
 
 
-    // ======================================================
-    // WORKER ZONE
-    // ======================================================
-
-    if (data.zone !== undefined) {
-
-        const firebaseZone =
-            String(data.zone)
-                .toUpperCase()
-                .replace("ZONE", "")
-                .trim();
-
-        if (
-            ["A", "B", "C", "D"].includes(firebaseZone)
-        ) {
-            currentWorkerZone = firebaseZone;
-        }
-    }
-
-
-    updateWorkerZone();
-
-
-    // ======================================================
-    // BATTERY
-    // ======================================================
-
-    if (data.battery !== undefined) {
-
-        const battery =
-            Number(data.battery);
-
-        setText(
-            "battery",
-            battery.toFixed(0) + "%"
-        );
-
-        setText(
-            "workerBattery",
-            battery.toFixed(0) + "%"
-        );
-    }
-
-
-    // ======================================================
-    // ESP32 SYSTEM STATUS
-    // ======================================================
-
-    updateDeviceStatus(
-        data.systemStatus
+    setText(
+        "dashboardHeart",
+        heart + " BPM"
     );
 
 
-    // ======================================================
-    // ALERT SYSTEM
-    // ======================================================
-
-    const alertInfo =
-        calculateAlert(
-            temperature,
-            gas,
-            impact,
-            noMotion
-        );
-
-
-    updateAlertUI(
-        alertInfo.status,
-        alertInfo.reason
+    setText(
+        "heartRateDetail",
+        heart + " BPM"
     );
 
 
-    // ======================================================
-    // AI RISK SCORE
-    // ======================================================
-
-    const riskInfo =
-        calculateRiskScore(
-            temperature,
-            humidity,
-            gas,
-            pressure,
-            motion,
-            impact,
-            noMotion
-        );
-
-
-    updateRiskUI(riskInfo);
-
-
-    // ======================================================
-    // ZONES
-    // ======================================================
-
-    updateZones(
-        temperature,
-        gas,
-        pressure,
-        impact,
-        noMotion
+    setText(
+        "heartCurrent",
+        heart + " BPM"
     );
 
 
-    // ======================================================
-    // EVACUATION
-    // ======================================================
+    updateHeartStatus();
 
-    updateEvacuation(
-        temperature,
-        gas,
-        pressure,
-        impact,
-        noMotion
-    );
-
-
-    // ======================================================
-    // ALERT HISTORY
-    // ======================================================
-
-    updateAlertHistory(
-        alertInfo.status,
-        alertInfo.reason
-    );
-
-
-    // ======================================================
-    // CHARTS
-    // ======================================================
-
-    updateCharts(
-        temperature,
-        gas,
-        pressure
-    );
-
-});
-
-
-// ==========================================================
-// SAFE TEXT HELPER
-// ==========================================================
-
-function setText(id, value) {
-
-    const element =
-        document.getElementById(id);
-
-    if (element) {
-        element.innerText = value;
-    }
 }
 
 
 // ==========================================================
-// WORKER ZONE UPDATE
+// HEART STATUS
 // ==========================================================
 
-function updateWorkerZone() {
+function updateHeartStatus() {
 
-    setText(
-        "workerZone",
-        "Zone " + currentWorkerZone
-    );
+    const heart =
+        sensorData.heartRate;
 
-    setText(
-        "workerZoneDetail",
-        "Zone " + currentWorkerZone
-    );
+    let status =
+        "NORMAL";
 
-    setText(
-        "currentZone",
-        "ZONE " + currentWorkerZone
-    );
-}
+    let color =
+        "#22c55e";
 
 
-// ==========================================================
-// DEVICE STATUS
-// ==========================================================
+    if (heart >= 120) {
 
-function updateDeviceStatus(systemStatus) {
+        status =
+            "HIGH HEART RATE";
 
-    const device =
-        document.getElementById("device");
+        color =
+            "#ef4444";
 
-    const dashboardDevice =
-        document.getElementById("dashboardDevice");
+    }
 
-    const workerDevice =
-        document.getElementById("workerDevice");
+    else if (heart >= 105) {
 
-    const statusBox =
-        document.querySelector(".header-right .status");
+        status =
+            "ELEVATED";
 
+        color =
+            "#f59e0b";
 
-    // IMPORTANT:
-    // Default is DISCONNECTED.
-    // It will become CONNECTED only when
-    // Firebase systemStatus is exactly ONLINE.
+    }
 
-    let online = false;
+    else if (heart < 55) {
 
+        status =
+            "LOW HEART RATE";
 
-    if (
-        systemStatus !== undefined &&
-        systemStatus !== null
-    ) {
+        color =
+            "#f59e0b";
 
-        online =
-            String(systemStatus)
-                .toUpperCase()
-                .trim() === "ONLINE";
     }
 
 
-    const text =
-        online
-            ? "ESP32 Connected"
-            : "ESP32 Disconnected";
+    const statusElement =
+        document.getElementById(
+            "heartStatus"
+        );
 
 
-    // Header
-    if (device) {
-        device.innerText = text;
+    const healthElement =
+        document.getElementById(
+            "heartHealth"
+        );
+
+
+    if (statusElement) {
+
+        statusElement.innerText =
+            status;
+
+        statusElement.style.color =
+            color;
+
     }
 
 
-    // Dashboard
-    if (dashboardDevice) {
-        dashboardDevice.innerText = text;
+    if (healthElement) {
+
+        healthElement.innerText =
+            status;
+
+        healthElement.style.color =
+            color;
+
     }
 
-
-    // Worker page
-    if (workerDevice) {
-        workerDevice.innerText = text;
-    }
-
-
-    // Header status box
-    if (statusBox) {
-
-        if (online) {
-
-            statusBox.style.background = "#166534";
-
-            statusBox.innerHTML =
-                '🟢 <span id="device">ESP32 Connected</span>';
-
-        } else {
-
-            statusBox.style.background = "#991b1b";
-
-            statusBox.innerHTML =
-                '🔴 <span id="device">ESP32 Disconnected</span>';
-        }
-    }
 }
 
 
@@ -473,55 +610,104 @@ function updateDeviceStatus(systemStatus) {
 // ALERT CALCULATION
 // ==========================================================
 
-function calculateAlert(
-    temperature,
-    gas,
-    impact,
-    noMotion
-) {
+function calculateAlert() {
 
-    let status = "SAFE";
+    const t =
+        sensorData.temperature;
 
-    let reason = "No Hazard Detected";
+    const gas =
+        sensorData.gas;
+
+    const heart =
+        sensorData.heartRate;
+
+    const pressure =
+        sensorData.pressure;
+
+    const impact =
+        sensorData.impact;
+
+    const noMotion =
+        sensorData.noMotion;
 
 
-    // Dangerous gas
+    let status =
+        "SAFE";
+
+    let reason =
+        "No Hazard Detected";
+
+
+    // Highest priority
+
     if (gas >= 1200) {
 
-        status = "DANGER";
+        status =
+            "DANGER";
 
         reason =
             "Dangerous Gas Level Detected";
+
     }
 
+    else if (t >= 40) {
 
-    // Temperature
-    else if (temperature >= 40) {
-
-        status = "DANGER";
+        status =
+            "DANGER";
 
         reason =
             "High Temperature Detected";
+
     }
 
-
-    // Impact
     else if (impact) {
 
-        status = "DANGER";
+        status =
+            "DANGER";
 
         reason =
             "Worker Impact Detected";
+
     }
 
+    else if (heart >= 120) {
 
-    // No motion
-    else if (noMotion) {
-
-        status = "WARNING";
+        status =
+            "DANGER";
 
         reason =
-            "No Motion Detected";
+            "Abnormal Heart Rate Detected";
+
+    }
+
+    else if (pressure < 850) {
+
+        status =
+            "WARNING";
+
+        reason =
+            "Abnormal Pressure Detected";
+
+    }
+
+    else if (heart >= 105) {
+
+        status =
+            "WARNING";
+
+        reason =
+            "Elevated Heart Rate";
+
+    }
+
+    else if (noMotion) {
+
+        status =
+            "WARNING";
+
+        reason =
+            "No Worker Motion Detected";
+
     }
 
 
@@ -529,6 +715,7 @@ function calculateAlert(
         status,
         reason
     };
+
 }
 
 
@@ -536,13 +723,11 @@ function calculateAlert(
 // ALERT UI
 // ==========================================================
 
-function updateAlertUI(
-    status,
-    reason
-) {
+function updateAlertUI(alert) {
 
     const statusElement =
         document.getElementById("status");
+
 
     const reasonElement =
         document.getElementById("reason");
@@ -551,48 +736,58 @@ function updateAlertUI(
     if (statusElement) {
 
         statusElement.innerText =
-            status;
+            alert.status;
 
 
-        if (status === "DANGER") {
+        if (alert.status === "DANGER") {
 
             statusElement.style.color =
                 "#ef4444";
 
-        } else if (status === "WARNING") {
+        }
+
+        else if (alert.status === "WARNING") {
 
             statusElement.style.color =
                 "#facc15";
 
-        } else {
+        }
+
+        else {
 
             statusElement.style.color =
                 "#22c55e";
+
         }
+
     }
 
 
     if (reasonElement) {
+
         reasonElement.innerText =
-            reason;
+            alert.reason;
+
     }
 
 
-    // Dashboard latest alert
     setText(
         "dashboardAlert",
-        reason
+        alert.reason
     );
 
 
     setText(
         "dashboardAlertStatus",
-        status === "DANGER"
+
+        alert.status === "DANGER"
             ? "🔴 DANGER"
-            : status === "WARNING"
+            : alert.status === "WARNING"
                 ? "🟡 WARNING"
                 : "🟢 SAFE"
+
     );
+
 }
 
 
@@ -600,219 +795,259 @@ function updateAlertUI(
 // AI RISK SCORE
 // ==========================================================
 
-function calculateRiskScore(
-    temperature,
-    humidity,
-    gas,
-    pressure,
-    motion,
-    impact,
-    noMotion
-) {
+function calculateRisk() {
+
+    const t =
+        sensorData.temperature;
+
+    const humidity =
+        sensorData.humidity;
+
+    const gas =
+        sensorData.gas;
+
+    const pressure =
+        sensorData.pressure;
+
+    const heart =
+        sensorData.heartRate;
+
+    const impact =
+        sensorData.impact;
+
+    const noMotion =
+        sensorData.noMotion;
+
 
     let score = 0;
 
-    let predictedHazard =
+    let hazard =
         "No Hazard";
 
-    let confidence = 90;
+    let confidence =
+        90;
 
-    let recommendedAction =
+    let action =
         "Normal Monitoring";
 
 
-    // ======================================================
     // GAS
-    // ======================================================
 
     if (gas >= 1200) {
 
         score += 40;
 
-        predictedHazard =
+        hazard =
             "Dangerous Gas Level";
 
-        confidence = 94;
+        confidence =
+            95;
 
-        recommendedAction =
+        action =
             "Evacuate affected zone";
 
-    } else if (gas >= 800) {
+    }
+
+    else if (gas >= 800) {
 
         score += 25;
 
-        predictedHazard =
+        hazard =
             "Rising Gas Level";
 
-        confidence = 82;
+        confidence =
+            83;
 
-        recommendedAction =
+        action =
             "Monitor gas level closely";
 
-    } else if (gas >= 500) {
+    }
+
+    else if (gas >= 500) {
 
         score += 12;
+
     }
 
 
-    // ======================================================
     // TEMPERATURE
-    // ======================================================
 
-    if (temperature >= 45) {
+    if (t >= 45) {
 
         score += 30;
 
-        predictedHazard =
+        hazard =
             "Extreme Temperature";
 
-        confidence = 92;
+        confidence =
+            94;
 
-        recommendedAction =
+        action =
             "Move worker to safer area";
 
-    } else if (temperature >= 40) {
+    }
+
+    else if (t >= 40) {
 
         score += 20;
 
-        if (
-            predictedHazard === "No Hazard"
-        ) {
+        hazard =
+            "High Temperature";
 
-            predictedHazard =
-                "High Temperature";
-        }
-
-        recommendedAction =
+        action =
             "Monitor temperature";
 
-    } else if (temperature >= 35) {
+    }
+
+    else if (t >= 35) {
 
         score += 10;
+
     }
 
 
-    // ======================================================
     // PRESSURE
-    // ======================================================
 
     if (
-        pressure > 1000 ||
-        (pressure > 0 && pressure < 850)
+        pressure < 850 ||
+        pressure > 1000
     ) {
 
         score += 15;
 
-        if (
-            predictedHazard === "No Hazard"
-        ) {
+        if (hazard === "No Hazard") {
 
-            predictedHazard =
+            hazard =
                 "Abnormal Pressure";
+
         }
+
     }
 
 
-    // ======================================================
     // HUMIDITY
-    // ======================================================
 
     if (humidity >= 85) {
 
         score += 8;
 
-    } else if (humidity >= 75) {
+    }
+
+    else if (humidity >= 75) {
 
         score += 4;
+
     }
 
 
-    // ======================================================
-    // IMPACT
-    // ======================================================
+    // HEART RATE
 
-    if (impact) {
+    if (heart >= 120) {
 
         score += 25;
 
-        predictedHazard =
-            "Worker Impact Detected";
+        hazard =
+            "Abnormal Heart Rate";
 
-        confidence = 96;
+        confidence =
+            94;
 
-        recommendedAction =
+        action =
             "Check worker immediately";
+
+    }
+
+    else if (heart >= 105) {
+
+        score += 12;
+
+        if (hazard === "No Hazard") {
+
+            hazard =
+                "Elevated Heart Rate";
+
+        }
+
+        action =
+            "Monitor worker health";
+
     }
 
 
-    // ======================================================
+    // IMPACT
+
+    if (impact) {
+
+        score += 30;
+
+        hazard =
+            "Worker Impact Detected";
+
+        confidence =
+            97;
+
+        action =
+            "Check worker immediately";
+
+    }
+
+
     // NO MOTION
-    // ======================================================
 
     if (noMotion) {
 
         score += 20;
 
-        predictedHazard =
+        hazard =
             "Possible Worker Inactivity";
 
-        confidence = 88;
+        confidence =
+            90;
 
-        recommendedAction =
+        action =
             "Check worker condition";
+
     }
 
-
-    // ======================================================
-    // MOTION
-    // ======================================================
-
-    if (!motion && !noMotion) {
-
-        score += 5;
-    }
-
-
-    // ======================================================
-    // LIMIT SCORE
-    // ======================================================
 
     score =
         Math.min(score, 100);
 
 
-    // ======================================================
-    // RISK LEVEL
-    // ======================================================
-
-    let riskLevel =
+    let level =
         "LOW RISK";
 
 
     if (score >= 75) {
 
-        riskLevel =
+        level =
             "CRITICAL RISK";
 
-    } else if (score >= 50) {
+    }
 
-        riskLevel =
+    else if (score >= 50) {
+
+        level =
             "HIGH RISK";
 
-    } else if (score >= 25) {
+    }
 
-        riskLevel =
+    else if (score >= 25) {
+
+        level =
             "MEDIUM RISK";
+
     }
 
 
     return {
         score,
-        riskLevel,
-        predictedHazard,
+        level,
+        hazard,
         confidence,
-        recommendedAction
+        action
     };
+
 }
 
 
@@ -822,72 +1057,64 @@ function calculateRiskScore(
 
 function updateRiskUI(risk) {
 
-    // Dashboard
     setText(
         "riskScore",
         risk.score
     );
 
+
     setText(
         "riskLevel",
-        risk.riskLevel
+        risk.level
     );
+
 
     setText(
         "predictedHazard",
-        risk.predictedHazard
+        risk.hazard
     );
+
 
     setText(
         "riskConfidence",
         risk.confidence + "%"
     );
 
+
     setText(
         "recommendedAction",
-        risk.recommendedAction
+        risk.action
     );
 
 
-    // AI Risk page
     setText(
         "riskScoreDetail",
         risk.score
     );
 
+
     setText(
         "riskLevelDetail",
-        risk.riskLevel
+        risk.level
     );
+
 
     setText(
         "predictedHazardDetail",
-        risk.predictedHazard
+        risk.hazard
     );
+
 
     setText(
         "riskConfidenceDetail",
         risk.confidence + "%"
     );
 
+
     setText(
         "recommendedActionDetail",
-        risk.recommendedAction
+        risk.action
     );
-
-
-    // Risk colors
-    const scoreElement =
-        document.getElementById("riskScore");
-
-    const levelElement =
-        document.getElementById("riskLevel");
-
-    const scoreDetail =
-        document.getElementById("riskScoreDetail");
-
-    const levelDetail =
-        document.getElementById("riskLevelDetail");
 
 
     let color =
@@ -899,33 +1126,52 @@ function updateRiskUI(risk) {
         color =
             "#ef4444";
 
-    } else if (risk.score >= 50) {
+    }
+
+    else if (risk.score >= 50) {
 
         color =
             "#f97316";
 
-    } else if (risk.score >= 25) {
+    }
+
+    else if (risk.score >= 25) {
 
         color =
             "#facc15";
+
     }
 
 
-    if (scoreElement) {
-        scoreElement.style.color = color;
-    }
+    const scoreElement =
+        document.getElementById("riskScore");
 
-    if (levelElement) {
-        levelElement.style.color = color;
-    }
+    const levelElement =
+        document.getElementById("riskLevel");
 
-    if (scoreDetail) {
-        scoreDetail.style.color = color;
-    }
+    const detailScore =
+        document.getElementById("riskScoreDetail");
 
-    if (levelDetail) {
-        levelDetail.style.color = color;
-    }
+    const detailLevel =
+        document.getElementById("riskLevelDetail");
+
+
+    [
+        scoreElement,
+        levelElement,
+        detailScore,
+        detailLevel
+    ].forEach(element => {
+
+        if (element) {
+
+            element.style.color =
+                color;
+
+        }
+
+    });
+
 }
 
 
@@ -933,72 +1179,57 @@ function updateRiskUI(risk) {
 // ZONE MONITORING
 // ==========================================================
 
-function updateZones(
-    temperature,
-    gas,
-    pressure,
-    impact,
-    noMotion
-) {
+function updateZones(alert) {
 
-    let zoneStatus =
+    const zones =
+        ["A", "B", "C", "D"];
+
+
+    zones.forEach(zone => {
+
+        setZone(
+            zone,
+            "SAFE"
+        );
+
+    });
+
+
+    const worker =
+        getCurrentWorker();
+
+
+    let currentStatus =
         "SAFE";
 
 
     if (
-        gas >= 1200 ||
-        temperature >= 45 ||
-        impact
+        alert.status === "DANGER"
     ) {
 
-        zoneStatus =
+        currentStatus =
             "DANGER";
 
-    } else if (
-        gas >= 800 ||
-        temperature >= 40 ||
-        pressure > 1000 ||
-        (pressure > 0 && pressure < 850) ||
-        noMotion
+    }
+
+    else if (
+        alert.status === "WARNING"
     ) {
 
-        zoneStatus =
+        currentStatus =
             "WARNING";
+
     }
 
 
-    // Reset zones
     setZone(
-        "zoneA",
-        "zoneAStatus",
-        "SAFE"
-    );
-
-    setZone(
-        "zoneB",
-        "zoneBStatus",
-        "SAFE"
-    );
-
-    setZone(
-        "zoneC",
-        "zoneCStatus",
-        "SAFE"
-    );
-
-    setZone(
-        "zoneD",
-        "zoneDStatus",
-        "SAFE"
+        worker.zone,
+        currentStatus
     );
 
 
-    // Apply current zone status
-    setZone(
-        "zone" + currentWorkerZone,
-        "zone" + currentWorkerZone + "Status",
-        zoneStatus
-    );
+    updateZoneWorkerCounts();
+
 }
 
 
@@ -1007,20 +1238,25 @@ function updateZones(
 // ==========================================================
 
 function setZone(
-    zoneId,
-    statusId,
+    zoneLetter,
     status
 ) {
 
     const zone =
-        document.getElementById(zoneId);
+        document.getElementById(
+            "zone" + zoneLetter
+        );
 
     const statusText =
-        document.getElementById(statusId);
+        document.getElementById(
+            "zone" + zoneLetter + "Status"
+        );
 
 
     if (!zone || !statusText) {
+
         return;
+
     }
 
 
@@ -1038,110 +1274,110 @@ function setZone(
         statusText.innerText =
             "🔴 DANGER";
 
-    } else if (status === "WARNING") {
+    }
+
+    else if (status === "WARNING") {
 
         zone.classList.add("warning");
 
         statusText.innerText =
             "🟡 WARNING";
 
-    } else {
+    }
+
+    else {
 
         zone.classList.add("safe");
 
         statusText.innerText =
             "🟢 SAFE";
+
     }
+
 }
 
 
 // ==========================================================
-// EVACUATION SYSTEM
+// WORKER COUNT
 // ==========================================================
 
-function updateEvacuation(
-    temperature,
-    gas,
-    pressure,
-    impact,
-    noMotion
-) {
+function updateZoneWorkerCounts() {
 
-    let evacuationRequired =
+    const counts = {
+        A: 0,
+        B: 0,
+        C: 0,
+        D: 0
+    };
+
+
+    workers.forEach(worker => {
+
+        counts[worker.zone]++;
+
+    });
+
+
+    setText(
+        "zoneAWorker",
+        "Workers: " + counts.A
+    );
+
+    setText(
+        "zoneBWorker",
+        "Workers: " + counts.B
+    );
+
+    setText(
+        "zoneCWorker",
+        "Workers: " + counts.C
+    );
+
+    setText(
+        "zoneDWorker",
+        "Workers: " + counts.D
+    );
+
+}
+
+
+// ==========================================================
+// EVACUATION
+// ==========================================================
+
+function updateEvacuation(alert) {
+
+    const worker =
+        getCurrentWorker();
+
+
+    let required =
         false;
 
     let reason =
         "No evacuation required.";
 
-    let safeZone =
-        getSafeZone(currentWorkerZone);
 
+    if (alert.status === "DANGER") {
 
-    // Dangerous gas
-    if (gas >= 1200) {
-
-        evacuationRequired =
+        required =
             true;
 
         reason =
-            "Dangerous gas concentration detected.";
+            alert.reason;
 
     }
 
 
-    // Extreme temperature
-    else if (temperature >= 45) {
-
-        evacuationRequired =
-            true;
-
-        reason =
-            "Extreme temperature detected.";
-
-    }
-
-
-    // Impact
-    else if (impact) {
-
-        evacuationRequired =
-            true;
-
-        reason =
-            "Worker impact detected.";
-
-    }
-
-
-    // No motion
-    else if (noMotion) {
-
-        evacuationRequired =
-            true;
-
-        reason =
-            "No worker motion detected.";
-
-    }
-
-
-    // Abnormal pressure
-    else if (
-        pressure > 1000 ||
-        (pressure > 0 && pressure < 850)
-    ) {
-
-        evacuationRequired =
-            true;
-
-        reason =
-            "Abnormal pressure detected.";
-    }
+    const safeZone =
+        getSafeZone(
+            worker.zone
+        );
 
 
     setText(
         "currentZone",
-        "ZONE " + currentWorkerZone
+        "ZONE " + worker.zone
     );
 
 
@@ -1157,31 +1393,52 @@ function updateEvacuation(
     );
 
 
-    const statusElement =
+    const status =
         document.getElementById(
             "evacuationStatus"
         );
 
 
-    if (statusElement) {
+    const card =
+        document.querySelector(
+            ".evacuation-status-card"
+        );
 
-        if (evacuationRequired) {
 
-            statusElement.innerText =
-                "🚨 EVACUATION REQUIRED";
+    if (required) {
 
-            statusElement.style.color =
+        status.innerText =
+            "🚨 EVACUATION REQUIRED";
+
+        status.style.color =
+            "#ef4444";
+
+        if (card) {
+
+            card.style.borderColor =
                 "#ef4444";
 
-        } else {
-
-            statusElement.innerText =
-                "NO EVACUATION";
-
-            statusElement.style.color =
-                "#22c55e";
         }
+
     }
+
+    else {
+
+        status.innerText =
+            "NO EVACUATION";
+
+        status.style.color =
+            "#22c55e";
+
+        if (card) {
+
+            card.style.borderColor =
+                "#22c55e";
+
+        }
+
+    }
+
 }
 
 
@@ -1189,9 +1446,9 @@ function updateEvacuation(
 // SAFE ZONE
 // ==========================================================
 
-function getSafeZone(currentZone) {
+function getSafeZone(zone) {
 
-    const safeZoneMap = {
+    const map = {
 
         A: "ZONE D",
 
@@ -1200,11 +1457,12 @@ function getSafeZone(currentZone) {
         C: "ZONE D",
 
         D: "ZONE B"
+
     };
 
 
-    return safeZoneMap[currentZone]
-        || "ZONE D";
+    return map[zone] || "ZONE D";
+
 }
 
 
@@ -1212,10 +1470,85 @@ function getSafeZone(currentZone) {
 // ALERT HISTORY
 // ==========================================================
 
-function updateAlertHistory(
-    status,
-    reason
-) {
+function updateAlertHistory(alert) {
+
+    const key =
+        alert.status + "-" +
+        alert.reason;
+
+
+    if (
+        key === lastAlertKey
+    ) {
+
+        return;
+
+    }
+
+
+    lastAlertKey =
+        key;
+
+
+    // Don't flood table with SAFE updates
+
+    if (
+        alert.status === "SAFE"
+    ) {
+
+        return;
+
+    }
+
+
+    const worker =
+        getCurrentWorker();
+
+
+    const entry = {
+
+        time:
+            new Date().toLocaleTimeString(),
+
+        worker:
+            worker.id,
+
+        zone:
+            "Zone " + worker.zone,
+
+        alert:
+            alert.reason,
+
+        status:
+            alert.status
+
+    };
+
+
+    alertHistory.unshift(
+        entry
+    );
+
+
+    if (
+        alertHistory.length > 10
+    ) {
+
+        alertHistory.pop();
+
+    }
+
+
+    renderAlertHistory();
+
+}
+
+
+// ==========================================================
+// RENDER ALERT HISTORY
+// ==========================================================
+
+function renderAlertHistory() {
 
     const table =
         document.getElementById(
@@ -1224,97 +1557,203 @@ function updateAlertHistory(
 
 
     if (!table) {
+
         return;
+
     }
 
 
-    // Only add a new row when alert changes
-    const alertKey =
-        status + "-" + reason;
+    table.innerHTML = "";
 
 
-    if (lastAlert === alertKey) {
-        return;
-    }
+    alertHistory.forEach(entry => {
+
+        const row =
+            document.createElement("tr");
 
 
-    lastAlert = alertKey;
+        const statusText =
+            entry.status === "DANGER"
+                ? "🔴 DANGER"
+                : "🟡 WARNING";
 
 
-    // For SAFE
-    if (status === "SAFE") {
+        row.innerHTML = `
 
-        table.innerHTML = `
-            <tr>
-                <td>${new Date().toLocaleTimeString()}</td>
-                <td>Worker-01</td>
-                <td>Zone ${currentWorkerZone}</td>
-                <td>No Alerts</td>
-                <td>🟢 SAFE</td>
-            </tr>
+            <td>${entry.time}</td>
+
+            <td>${entry.worker}</td>
+
+            <td>${entry.zone}</td>
+
+            <td>${entry.alert}</td>
+
+            <td>${statusText}</td>
+
         `;
 
-        return;
+
+        table.appendChild(row);
+
+    });
+
+
+    if (
+        alertHistory.length === 0
+    ) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td>--:--</td>
+
+                <td>System</td>
+
+                <td>--</td>
+
+                <td>No Alerts</td>
+
+                <td>🟢 SAFE</td>
+
+            </tr>
+
+        `;
+
     }
 
-
-    const row =
-        document.createElement("tr");
+}
 
 
-    const statusText =
-        status === "DANGER"
-            ? "🔴 DANGER"
-            : "🟡 WARNING";
+// ==========================================================
+// WORKER CARDS
+// ==========================================================
 
+function renderWorkers() {
 
-    row.innerHTML = `
-        <td>${new Date().toLocaleTimeString()}</td>
-        <td>Worker-01</td>
-        <td>Zone ${currentWorkerZone}</td>
-        <td>${reason}</td>
-        <td>${statusText}</td>
-    `;
-
-
-    table.prepend(row);
-
-
-    // Keep latest 10 alerts
-    while (table.rows.length > 10) {
-
-        table.deleteRow(
-            table.rows.length - 1
+    const grid =
+        document.getElementById(
+            "workerGrid"
         );
+
+
+    if (!grid) {
+
+        return;
+
     }
+
+
+    grid.innerHTML = "";
+
+
+    workers.forEach(
+        (worker, index) => {
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            let workerStatus =
+                "SAFE";
+
+            let statusClass =
+                "worker-safe";
+
+
+            if (
+                index === currentWorkerIndex
+            ) {
+
+                if (
+                    sensorData.impact ||
+                    sensorData.heartRate >= 120
+                ) {
+
+                    workerStatus =
+                        "DANGER";
+
+                    statusClass =
+                        "worker-danger";
+
+                }
+
+                else if (
+                    sensorData.heartRate >= 105 ||
+                    sensorData.noMotion
+                ) {
+
+                    workerStatus =
+                        "WARNING";
+
+                    statusClass =
+                        "worker-warning";
+
+                }
+
+            }
+
+
+            card.className =
+                "worker-card " +
+                statusClass;
+
+
+            card.innerHTML = `
+
+                <h2>👷 ${worker.id}</h2>
+
+                <div class="worker-info">
+
+                    <div>
+                        <span>Name</span>
+                        <b>${worker.name}</b>
+                    </div>
+
+                    <div>
+                        <span>Zone</span>
+                        <b>ZONE ${worker.zone}</b>
+                    </div>
+
+                    <div>
+                        <span>Battery</span>
+                        <b>${worker.battery}%</b>
+                    </div>
+
+                    <div>
+                        <span>Heart Rate</span>
+                        <b>
+                            ${
+                                index === currentWorkerIndex
+                                ? sensorData.heartRate + " BPM"
+                                : randomBetween(65, 90) + " BPM"
+                            }
+                        </b>
+                    </div>
+
+                    <div>
+                        <span>Status</span>
+                        <b>${workerStatus}</b>
+                    </div>
+
+                    <div>
+                        <span>Helmet</span>
+                        <b>🟢 Connected</b>
+                    </div>
+
+                </div>
+
+            `;
+
+
+            grid.appendChild(card);
+
+        }
+    );
+
 }
-
-
-// ==========================================================
-// CLOCK
-// ==========================================================
-
-function updateClock() {
-
-    const clock =
-        document.getElementById("clock");
-
-
-    if (clock) {
-
-        clock.innerText =
-            new Date().toLocaleTimeString();
-    }
-}
-
-
-setInterval(
-    updateClock,
-    1000
-);
-
-
-updateClock();
 
 
 // ==========================================================
@@ -1327,6 +1766,8 @@ let gasChart = null;
 
 let pressureChart = null;
 
+let heartChart = null;
+
 
 // ==========================================================
 // INITIALIZE CHARTS
@@ -1335,124 +1776,80 @@ let pressureChart = null;
 function initializeCharts() {
 
     const tempCanvas =
-        document.getElementById("tempChart");
+        document.getElementById(
+            "tempChart"
+        );
 
     const gasCanvas =
-        document.getElementById("gasChart");
+        document.getElementById(
+            "gasChart"
+        );
 
     const pressureCanvas =
-        document.getElementById("pressureChart");
+        document.getElementById(
+            "pressureChart"
+        );
+
+    const heartCanvas =
+        document.getElementById(
+            "heartChart"
+        );
 
 
     if (
         !tempCanvas ||
         !gasCanvas ||
-        !pressureCanvas
+        !pressureCanvas ||
+        !heartCanvas
     ) {
+
         return;
+
     }
 
 
-    const tempCtx =
-        tempCanvas.getContext("2d");
-
-    const gasCtx =
-        gasCanvas.getContext("2d");
-
-    const pressureCtx =
-        pressureCanvas.getContext("2d");
-
-
-    // ======================================================
-    // TEMPERATURE CHART
-    // ======================================================
-
     tempChart =
-        new Chart(tempCtx, {
+        createChart(
+            tempCanvas,
+            "Temperature (°C)"
+        );
 
-            type: "line",
-
-            data: {
-
-                labels: [],
-
-                datasets: [{
-
-                    label: "Temperature (°C)",
-
-                    data: [],
-
-                    borderWidth: 3,
-
-                    tension: 0.3,
-
-                    fill: false
-                }]
-            },
-
-            options: {
-
-                responsive: true,
-
-                maintainAspectRatio: false,
-
-                animation: false,
-
-                scales: {
-
-                    y: {
-
-                        beginAtZero: false
-                    }
-                }
-            }
-        });
-
-
-    // ======================================================
-    // GAS CHART
-    // ======================================================
 
     gasChart =
-        new Chart(gasCtx, {
+        createChart(
+            gasCanvas,
+            "Gas Level"
+        );
 
-            type: "line",
-
-            data: {
-
-                labels: [],
-
-                datasets: [{
-
-                    label: "Gas Level",
-
-                    data: [],
-
-                    borderWidth: 3,
-
-                    tension: 0.3,
-
-                    fill: false
-                }]
-            },
-
-            options: {
-
-                responsive: true,
-
-                maintainAspectRatio: false,
-
-                animation: false
-            }
-        });
-
-
-    // ======================================================
-    // PRESSURE CHART
-    // ======================================================
 
     pressureChart =
-        new Chart(pressureCtx, {
+        createChart(
+            pressureCanvas,
+            "Pressure (hPa)"
+        );
+
+
+    heartChart =
+        createChart(
+            heartCanvas,
+            "Heart Rate (BPM)"
+        );
+
+}
+
+
+// ==========================================================
+// CREATE CHART
+// ==========================================================
+
+function createChart(
+    canvas,
+    label
+) {
+
+    return new Chart(
+        canvas.getContext("2d"),
+        {
 
             type: "line",
 
@@ -1462,16 +1859,18 @@ function initializeCharts() {
 
                 datasets: [{
 
-                    label: "Pressure (hPa)",
+                    label: label,
 
                     data: [],
 
                     borderWidth: 3,
 
-                    tension: 0.3,
+                    tension: .3,
 
                     fill: false
+
                 }]
+
             },
 
             options: {
@@ -1481,8 +1880,12 @@ function initializeCharts() {
                 maintainAspectRatio: false,
 
                 animation: false
+
             }
-        });
+
+        }
+    );
+
 }
 
 
@@ -1490,18 +1893,17 @@ function initializeCharts() {
 // UPDATE CHARTS
 // ==========================================================
 
-function updateCharts(
-    temperature,
-    gas,
-    pressure
-) {
+function updateCharts() {
 
     if (
         !tempChart ||
         !gasChart ||
-        !pressureChart
+        !pressureChart ||
+        !heartChart
     ) {
+
         return;
+
     }
 
 
@@ -1509,81 +1911,142 @@ function updateCharts(
         new Date().toLocaleTimeString();
 
 
-    // ======================================================
-    // TEMPERATURE
-    // ======================================================
-
-    tempChart.data.labels.push(time);
-
-    tempChart.data.datasets[0]
-        .data.push(temperature);
+    addChartPoint(
+        tempChart,
+        time,
+        sensorData.temperature
+    );
 
 
-    if (
-        tempChart.data.labels.length > 10
-    ) {
-
-        tempChart.data.labels.shift();
-
-        tempChart.data.datasets[0]
-            .data.shift();
-    }
+    addChartPoint(
+        gasChart,
+        time,
+        sensorData.gas
+    );
 
 
-    tempChart.update("none");
+    addChartPoint(
+        pressureChart,
+        time,
+        sensorData.pressure
+    );
 
 
-    // ======================================================
-    // GAS
-    // ======================================================
+    addChartPoint(
+        heartChart,
+        time,
+        sensorData.heartRate
+    );
 
-    gasChart.data.labels.push(time);
-
-    gasChart.data.datasets[0]
-        .data.push(gas);
-
-
-    if (
-        gasChart.data.labels.length > 10
-    ) {
-
-        gasChart.data.labels.shift();
-
-        gasChart.data.datasets[0]
-            .data.shift();
-    }
-
-
-    gasChart.update("none");
-
-
-    // ======================================================
-    // PRESSURE
-    // ======================================================
-
-    pressureChart.data.labels.push(time);
-
-    pressureChart.data.datasets[0]
-        .data.push(pressure);
-
-
-    if (
-        pressureChart.data.labels.length > 10
-    ) {
-
-        pressureChart.data.labels.shift();
-
-        pressureChart.data.datasets[0]
-            .data.shift();
-    }
-
-
-    pressureChart.update("none");
 }
 
 
 // ==========================================================
-// START CHARTS AFTER PAGE LOAD
+// CHART POINT
+// ==========================================================
+
+function addChartPoint(
+    chart,
+    time,
+    value
+) {
+
+    chart.data.labels.push(time);
+
+    chart.data.datasets[0]
+        .data.push(value);
+
+
+    if (
+        chart.data.labels.length > 15
+    ) {
+
+        chart.data.labels.shift();
+
+        chart.data.datasets[0]
+            .data.shift();
+
+    }
+
+
+    chart.update("none");
+
+}
+
+
+// ==========================================================
+// CLOCK
+// ==========================================================
+
+function updateClock() {
+
+    setText(
+        "clock",
+        new Date().toLocaleTimeString()
+    );
+
+}
+
+
+// ==========================================================
+// MAIN SIMULATION
+// ==========================================================
+
+function runSimulation() {
+
+    generateDummySensors();
+
+    updateCurrentWorker();
+
+    updateSensorUI();
+
+
+    const alert =
+        calculateAlert();
+
+
+    const risk =
+        calculateRisk();
+
+
+    updateAlertUI(alert);
+
+    updateRiskUI(risk);
+
+    updateZones(alert);
+
+    updateEvacuation(alert);
+
+    updateAlertHistory(alert);
+
+    renderWorkers();
+
+    updateCharts();
+
+}
+
+
+// ==========================================================
+// CHANGE CURRENT WORKER
+// ==========================================================
+
+function rotateWorker() {
+
+    currentWorkerIndex++;
+
+    if (
+        currentWorkerIndex >= workers.length
+    ) {
+
+        currentWorkerIndex = 0;
+
+    }
+
+}
+
+
+// ==========================================================
+// START
 // ==========================================================
 
 window.addEventListener(
@@ -1591,6 +2054,44 @@ window.addEventListener(
     () => {
 
         initializeCharts();
+
+        renderWorkers();
+
+        updateClock();
+
+        runSimulation();
+
+
+        // Sensor updates every 2 seconds
+
+        setInterval(
+            runSimulation,
+            2000
+        );
+
+
+        // Switch monitored worker every 12 seconds
+
+        setInterval(
+            () => {
+
+                rotateWorker();
+
+                updateCurrentWorker();
+
+                renderWorkers();
+
+            },
+            12000
+        );
+
+
+        // Clock
+
+        setInterval(
+            updateClock,
+            1000
+        );
 
     }
 );

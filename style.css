@@ -1,7 +1,3 @@
-/* =====================================================
-   HAZARDSHIELD AI - MAIN STYLES
-===================================================== */
-
 * {
     margin: 0;
     padding: 0;
@@ -16,9 +12,7 @@ body {
 }
 
 
-/* =====================================================
-   HEADER
-===================================================== */
+/* HEADER */
 
 header {
     display: flex;
@@ -62,9 +56,7 @@ header {
 }
 
 
-/* =====================================================
-   NAVIGATION
-===================================================== */
+/* NAVIGATION */
 
 .navbar {
     display: flex;
@@ -85,7 +77,7 @@ header {
     font-size: 14px;
     font-weight: bold;
     white-space: nowrap;
-    transition: 0.25s;
+    transition: .25s;
 }
 
 .nav-btn:hover {
@@ -99,9 +91,7 @@ header {
 }
 
 
-/* =====================================================
-   TAB SYSTEM
-===================================================== */
+/* TABS */
 
 .tab-content {
     display: none;
@@ -115,9 +105,7 @@ header {
 }
 
 
-/* =====================================================
-   PAGE TITLE
-===================================================== */
+/* PAGE TITLE */
 
 .page-title {
     margin-bottom: 25px;
@@ -134,9 +122,7 @@ header {
 }
 
 
-/* =====================================================
-   DASHBOARD OVERVIEW
-===================================================== */
+/* DASHBOARD */
 
 .overview-grid {
     display: grid;
@@ -150,7 +136,7 @@ header {
     padding: 25px;
     border-radius: 16px;
     border: 1px solid #334155;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .25);
     min-height: 165px;
 }
 
@@ -183,10 +169,6 @@ header {
     border: 2px solid #22c55e;
 }
 
-.safety-card #status {
-    color: #22c55e;
-}
-
 .risk-card {
     border: 2px solid #38bdf8;
 }
@@ -197,9 +179,7 @@ header {
 }
 
 
-/* =====================================================
-   GENERAL SECTION CARD
-===================================================== */
+/* GENERAL CARD */
 
 .section-card {
     background: #1e293b;
@@ -207,7 +187,7 @@ header {
     border-radius: 16px;
     border: 1px solid #334155;
     margin-bottom: 25px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .25);
 }
 
 .section-card h2 {
@@ -216,9 +196,7 @@ header {
 }
 
 
-/* =====================================================
-   SUMMARY GRID
-===================================================== */
+/* SUMMARY */
 
 .summary-grid,
 .detail-grid {
@@ -250,13 +228,11 @@ header {
 }
 
 
-/* =====================================================
-   MINI SENSOR CARDS
-===================================================== */
+/* SENSOR MINI */
 
 .mini-sensors {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 15px;
 }
 
@@ -275,14 +251,16 @@ header {
 }
 
 .mini-card strong {
-    font-size: 25px;
+    font-size: 22px;
     color: #38bdf8;
 }
 
+.heart-mini {
+    border-color: #be123c;
+}
 
-/* =====================================================
-   ACTION SUMMARY
-===================================================== */
+
+/* ACTION */
 
 .action-summary {
     border-left: 5px solid #38bdf8;
@@ -294,31 +272,74 @@ header {
 }
 
 
-/* =====================================================
-   WORKER PAGE
-===================================================== */
+/* WORKERS */
 
-.worker-detail-card {
+.worker-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.worker-card {
     background: #1e293b;
-    padding: 30px;
+    padding: 25px;
     border-radius: 16px;
     border: 1px solid #334155;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .25);
+    transition: .25s;
 }
 
-.worker-detail-card h2 {
+.worker-card:hover {
+    transform: translateY(-5px);
+    border-color: #38bdf8;
+}
+
+.worker-card h2 {
     color: #38bdf8;
-    margin-bottom: 25px;
+    margin-bottom: 18px;
+}
+
+.worker-info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.worker-info div {
+    background: #0f172a;
+    padding: 13px;
+    border-radius: 9px;
+}
+
+.worker-info span {
+    display: block;
+    color: #94a3b8;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.worker-info b {
+    color: #f8fafc;
+}
+
+.worker-safe {
+    border-left: 5px solid #22c55e;
+}
+
+.worker-warning {
+    border-left: 5px solid #f59e0b;
+}
+
+.worker-danger {
+    border-left: 5px solid #ef4444;
 }
 
 
-/* =====================================================
-   SENSOR PAGE
-===================================================== */
+/* SENSORS */
 
 .sensor-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
 }
 
@@ -328,8 +349,8 @@ header {
     border-radius: 16px;
     text-align: center;
     border: 1px solid #334155;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-    transition: 0.25s;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .25);
+    transition: .25s;
 }
 
 .sensor-card:hover {
@@ -352,10 +373,45 @@ header {
     color: #64748b;
 }
 
+.heart-sensor-card {
+    border-color: #be123c;
+}
 
-/* =====================================================
-   CHARTS
-===================================================== */
+
+/* HEART */
+
+.heart-main-card {
+    background: #1e293b;
+    padding: 40px;
+    text-align: center;
+    border-radius: 18px;
+    border: 2px solid #be123c;
+    margin-bottom: 25px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, .3);
+}
+
+.heart-icon {
+    font-size: 55px;
+    margin-bottom: 15px;
+}
+
+.heart-main-card h1 {
+    font-size: 65px;
+    color: #fb7185;
+}
+
+.heart-main-card h2 {
+    color: #22c55e;
+    margin-top: 10px;
+}
+
+.heart-main-card p {
+    color: #94a3b8;
+    margin-top: 10px;
+}
+
+
+/* CHARTS */
 
 .graphs {
     display: grid;
@@ -368,7 +424,7 @@ header {
     padding: 25px;
     border-radius: 16px;
     border: 1px solid #334155;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .25);
 }
 
 .graph h2 {
@@ -377,15 +433,13 @@ header {
     margin-bottom: 20px;
 }
 
-canvas {
-    width: 100% !important;
-    height: 320px !important;
+.chart-container {
+    height: 320px;
+    position: relative;
 }
 
 
-/* =====================================================
-   AI RISK
-===================================================== */
+/* AI */
 
 .ai-main-card {
     background: #1e293b;
@@ -436,9 +490,7 @@ canvas {
 }
 
 
-/* =====================================================
-   ZONES
-===================================================== */
+/* ZONES */
 
 .zone-grid {
     display: grid;
@@ -452,7 +504,7 @@ canvas {
     text-align: center;
     background: #1e293b;
     border: 2px solid #22c55e;
-    transition: 0.25s;
+    transition: .25s;
 }
 
 .zone:hover {
@@ -468,6 +520,12 @@ canvas {
     font-weight: bold;
 }
 
+.zone small {
+    display: block;
+    margin-top: 12px;
+    color: #94a3b8;
+}
+
 .zone.safe {
     border-color: #22c55e;
 }
@@ -478,12 +536,11 @@ canvas {
 
 .zone.danger {
     border-color: #ef4444;
+    animation: dangerPulse 1.2s infinite;
 }
 
 
-/* =====================================================
-   EVACUATION
-===================================================== */
+/* EVACUATION */
 
 .evacuation-status-card {
     background: #1e293b;
@@ -508,14 +565,8 @@ canvas {
     margin: 10px 0;
 }
 
-.evacuation-status-card b {
-    color: #ffffff;
-}
 
-
-/* =====================================================
-   DUMMY MINE MAP
-===================================================== */
+/* MAP */
 
 .mine-map-card {
     background: #1e293b;
@@ -584,9 +635,7 @@ canvas {
 }
 
 
-/* =====================================================
-   ALERT TABLE
-===================================================== */
+/* ALERT TABLE */
 
 .alert-table-container {
     background: #1e293b;
@@ -619,13 +668,12 @@ tr:hover {
 }
 
 
-/* =====================================================
-   DANGER ANIMATION
-===================================================== */
+/* ANIMATION */
 
-@keyframes blink {
+@keyframes dangerPulse {
+
     0% {
-        box-shadow: 0 0 8px #ef4444;
+        box-shadow: 0 0 5px #ef4444;
     }
 
     50% {
@@ -633,18 +681,13 @@ tr:hover {
     }
 
     100% {
-        box-shadow: 0 0 8px #ef4444;
+        box-shadow: 0 0 5px #ef4444;
     }
-}
 
-.alert-danger {
-    animation: blink 1s infinite;
 }
 
 
-/* =====================================================
-   FOOTER
-===================================================== */
+/* FOOTER */
 
 footer {
     margin-top: 30px;
@@ -656,9 +699,7 @@ footer {
 }
 
 
-/* =====================================================
-   RESPONSIVE
-===================================================== */
+/* RESPONSIVE */
 
 @media (max-width: 1200px) {
 
@@ -666,16 +707,15 @@ footer {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .sensor-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
     .mini-sensors {
         grid-template-columns: repeat(3, 1fr);
     }
 
-}
+    .sensor-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 
+}
 
 @media (max-width: 900px) {
 
@@ -689,6 +729,10 @@ footer {
         grid-template-columns: 1fr 1fr;
     }
 
+    .worker-grid {
+        grid-template-columns: 1fr;
+    }
+
     .summary-grid,
     .detail-grid {
         grid-template-columns: 1fr 1fr;
@@ -696,10 +740,6 @@ footer {
 
     .ai-grid {
         grid-template-columns: 1fr;
-    }
-
-    .sensor-grid {
-        grid-template-columns: 1fr 1fr;
     }
 
     .zone-grid {
@@ -711,7 +751,6 @@ footer {
     }
 
 }
-
 
 @media (max-width: 600px) {
 
@@ -737,10 +776,14 @@ footer {
     }
 
     .mini-sensors {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
     }
 
     .sensor-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .worker-info {
         grid-template-columns: 1fr;
     }
 
@@ -750,6 +793,10 @@ footer {
 
     .big-risk-score {
         font-size: 60px;
+    }
+
+    .heart-main-card h1 {
+        font-size: 45px;
     }
 
     .mine-map {

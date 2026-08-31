@@ -2,49 +2,52 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
+
 const PORT = 3000;
 
 app.use(cors());
+
 app.use(express.json());
-app.use(express.static(__dirname));
 
-let sensorData = {
-  workerId: "Worker-01",
-  temperature: 0,
-  humidity: 0,
-  gas: 0,
-  pressure: 0,
-  motion: false,
-  battery: 100,
-  alert: false,
-  reason: "SAFE"
-};
 
-// ESP32 se data receive
-app.post("/api/data", (req, res) => {
+// Serve dashboard files
 
-  sensorData = req.body;
+app.use(
+    express.static(__dirname)
+);
 
-  console.log(sensorData);
 
-  res.json({
-    success: true
-  });
+// Simple health check
 
-});
+app.get("/api/status", (req, res) => {
 
-// Dashboard ko data bhejna
-app.get("/api/data", (req, res) => {
+    res.json({
 
-  res.json(sensorData);
+        success: true,
+
+        system:
+            "HazardShield AI",
+
+        mode:
+            "Dummy Simulation",
+
+        status:
+            "ONLINE"
+
+    });
 
 });
+
 
 app.listen(PORT, () => {
 
-  console.log("================================");
-  console.log("🚀 SafeMine AI Server Started");
-  console.log("🌐 http://localhost:3000");
-  console.log("================================");
+    console.log("================================");
+    console.log("🚀 HazardShield AI Server Started");
+    console.log("🌐 http://localhost:3000");
+    console.log("📡 Mode: Dummy Sensor Simulation");
+    console.log("🔥 Firebase: Disabled");
+    console.log("👷 Workers: 10");
+    console.log("❤️ Heart Sensor: Enabled");
+    console.log("================================");
 
 });
