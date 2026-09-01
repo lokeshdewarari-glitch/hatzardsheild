@@ -16,6 +16,8 @@ let alertHistory = [];
 
 let simulationTick = 0;
 
+let selectedMapWorker = 0;
+
 
 // ==========================================================
 // 10 WORKERS
@@ -27,70 +29,90 @@ const workers = [
         id: "Worker-01",
         name: "Rahul Kumar",
         zone: "A",
-        battery: 96
+        battery: 96,
+        x: 18,
+        y: 28
     },
 
     {
         id: "Worker-02",
         name: "Amit Sharma",
         zone: "A",
-        battery: 91
+        battery: 91,
+        x: 29,
+        y: 18
     },
 
     {
         id: "Worker-03",
         name: "Vikas Rawat",
         zone: "A",
-        battery: 87
+        battery: 87,
+        x: 35,
+        y: 35
     },
 
     {
         id: "Worker-04",
         name: "Rohit Singh",
         zone: "B",
-        battery: 94
+        battery: 94,
+        x: 66,
+        y: 25
     },
 
     {
         id: "Worker-05",
         name: "Deepak Joshi",
         zone: "B",
-        battery: 82
+        battery: 82,
+        x: 78,
+        y: 36
     },
 
     {
         id: "Worker-06",
         name: "Arjun Bisht",
         zone: "B",
-        battery: 89
+        battery: 89,
+        x: 59,
+        y: 43
     },
 
     {
         id: "Worker-07",
         name: "Karan Negi",
         zone: "C",
-        battery: 95
+        battery: 95,
+        x: 25,
+        y: 72
     },
 
     {
         id: "Worker-08",
         name: "Mohit Thakur",
         zone: "C",
-        battery: 84
+        battery: 84,
+        x: 39,
+        y: 82
     },
 
     {
         id: "Worker-09",
         name: "Sahil Rana",
         zone: "D",
-        battery: 92
+        battery: 92,
+        x: 69,
+        y: 68
     },
 
     {
         id: "Worker-10",
         name: "Naveen Mehta",
         zone: "D",
-        battery: 88
+        battery: 88,
+        x: 82,
+        y: 82
     }
 
 ];
@@ -173,6 +195,13 @@ function showTab(tabId) {
 
     });
 
+
+    if (tabId === "liveMap") {
+
+        renderLiveMap();
+
+    }
+
 }
 
 
@@ -208,7 +237,7 @@ function randomBetween(min, max) {
 
 
 // ==========================================================
-// KEEP VALUE IN RANGE
+// CLAMP
 // ==========================================================
 
 function clamp(value, min, max) {
@@ -229,10 +258,6 @@ function generateDummySensors() {
 
     simulationTick++;
 
-
-    // ------------------------------------------
-    // NORMAL SMALL CHANGES
-    // ------------------------------------------
 
     sensorData.temperature =
         clamp(
@@ -288,22 +313,18 @@ function generateDummySensors() {
     sensorData.noMotion = false;
 
 
-    // ======================================================
-    // AUTOMATIC HAZARD SCENARIOS
-    // ======================================================
+    // GAS EVENT
 
-    // Every ~25 seconds gas danger
     if (simulationTick % 25 === 0) {
 
-        sensorData.gas = randomBetween(
-            1250,
-            1450
-        );
+        sensorData.gas =
+            randomBetween(1250, 1450);
 
     }
 
 
-    // Every ~40 seconds high temperature
+    // TEMPERATURE EVENT
+
     if (simulationTick % 40 === 0) {
 
         sensorData.temperature =
@@ -312,7 +333,8 @@ function generateDummySensors() {
     }
 
 
-    // Every ~55 seconds abnormal heart rate
+    // HEART EVENT
+
     if (simulationTick % 55 === 0) {
 
         sensorData.heartRate =
@@ -321,7 +343,8 @@ function generateDummySensors() {
     }
 
 
-    // Every ~70 seconds impact
+    // IMPACT EVENT
+
     if (simulationTick % 70 === 0) {
 
         sensorData.impact = true;
@@ -329,7 +352,8 @@ function generateDummySensors() {
     }
 
 
-    // Every ~85 seconds no motion
+    // NO MOTION EVENT
+
     if (simulationTick % 85 === 0) {
 
         sensorData.motion = false;
@@ -339,13 +363,48 @@ function generateDummySensors() {
     }
 
 
-    // Pressure event
+    // PRESSURE EVENT
+
     if (simulationTick % 100 === 0) {
 
         sensorData.pressure =
             randomBetween(820, 840);
 
     }
+
+}
+
+
+// ==========================================================
+// MOVE WORKERS
+// ==========================================================
+
+function updateWorkerLocations() {
+
+    workers.forEach((worker, index) => {
+
+        const movement =
+            index === currentWorkerIndex
+                ? 5
+                : 2;
+
+        worker.x =
+            clamp(
+                worker.x +
+                (Math.random() * movement * 2 - movement),
+                8,
+                92
+            );
+
+        worker.y =
+            clamp(
+                worker.y +
+                (Math.random() * movement * 2 - movement),
+                10,
+                90
+            );
+
+    });
 
 }
 
@@ -362,7 +421,7 @@ function getCurrentWorker() {
 
 
 // ==========================================================
-// UPDATE WORKER INFO
+// UPDATE CURRENT WORKER
 // ==========================================================
 
 function updateCurrentWorker() {
@@ -410,7 +469,7 @@ function updateCurrentWorker() {
 
 
 // ==========================================================
-// DASHBOARD SENSOR UI
+// SENSOR UI
 // ==========================================================
 
 function updateSensorUI() {
@@ -439,30 +498,25 @@ function updateSensorUI() {
         temperature.toFixed(1) + "°C"
     );
 
-
     setText(
         "hum",
         humidity.toFixed(0) + "%"
     );
-
 
     setText(
         "gas",
         gas.toFixed(0)
     );
 
-
     setText(
         "pressure",
         pressure.toFixed(1) + " hPa"
     );
 
-
     setText(
         "motion",
         motion ? "YES" : "NO"
     );
-
 
     setText(
         "heartRate",
@@ -475,30 +529,25 @@ function updateSensorUI() {
         temperature.toFixed(1) + "°C"
     );
 
-
     setText(
         "dashboardHum",
         humidity.toFixed(0) + "%"
     );
-
 
     setText(
         "dashboardGas",
         gas.toFixed(0)
     );
 
-
     setText(
         "dashboardPressure",
         pressure.toFixed(1) + " hPa"
     );
 
-
     setText(
         "dashboardMotion",
         motion ? "YES" : "NO"
     );
-
 
     setText(
         "dashboardHeart",
@@ -510,7 +559,6 @@ function updateSensorUI() {
         "heartRateDetail",
         heart + " BPM"
     );
-
 
     setText(
         "heartCurrent",
@@ -575,7 +623,6 @@ function updateHeartStatus() {
             "heartStatus"
         );
 
-
     const healthElement =
         document.getElementById(
             "heartHealth"
@@ -637,8 +684,6 @@ function calculateAlert() {
     let reason =
         "No Hazard Detected";
 
-
-    // Highest priority
 
     if (gas >= 1200) {
 
@@ -728,7 +773,6 @@ function updateAlertUI(alert) {
     const statusElement =
         document.getElementById("status");
 
-
     const reasonElement =
         document.getElementById("reason");
 
@@ -792,7 +836,7 @@ function updateAlertUI(alert) {
 
 
 // ==========================================================
-// AI RISK SCORE
+// AI RISK
 // ==========================================================
 
 function calculateRisk() {
@@ -831,8 +875,6 @@ function calculateRisk() {
         "Normal Monitoring";
 
 
-    // GAS
-
     if (gas >= 1200) {
 
         score += 40;
@@ -870,8 +912,6 @@ function calculateRisk() {
     }
 
 
-    // TEMPERATURE
-
     if (t >= 45) {
 
         score += 30;
@@ -906,8 +946,6 @@ function calculateRisk() {
     }
 
 
-    // PRESSURE
-
     if (
         pressure < 850 ||
         pressure > 1000
@@ -925,8 +963,6 @@ function calculateRisk() {
     }
 
 
-    // HUMIDITY
-
     if (humidity >= 85) {
 
         score += 8;
@@ -939,8 +975,6 @@ function calculateRisk() {
 
     }
 
-
-    // HEART RATE
 
     if (heart >= 120) {
 
@@ -974,8 +1008,6 @@ function calculateRisk() {
     }
 
 
-    // IMPACT
-
     if (impact) {
 
         score += 30;
@@ -991,8 +1023,6 @@ function calculateRisk() {
 
     }
 
-
-    // NO MOTION
 
     if (noMotion) {
 
@@ -1062,24 +1092,20 @@ function updateRiskUI(risk) {
         risk.score
     );
 
-
     setText(
         "riskLevel",
         risk.level
     );
-
 
     setText(
         "predictedHazard",
         risk.hazard
     );
 
-
     setText(
         "riskConfidence",
         risk.confidence + "%"
     );
-
 
     setText(
         "recommendedAction",
@@ -1092,24 +1118,20 @@ function updateRiskUI(risk) {
         risk.score
     );
 
-
     setText(
         "riskLevelDetail",
         risk.level
     );
-
 
     setText(
         "predictedHazardDetail",
         risk.hazard
     );
 
-
     setText(
         "riskConfidenceDetail",
         risk.confidence + "%"
     );
-
 
     setText(
         "recommendedActionDetail",
@@ -1143,24 +1165,11 @@ function updateRiskUI(risk) {
     }
 
 
-    const scoreElement =
-        document.getElementById("riskScore");
-
-    const levelElement =
-        document.getElementById("riskLevel");
-
-    const detailScore =
-        document.getElementById("riskScoreDetail");
-
-    const detailLevel =
-        document.getElementById("riskLevelDetail");
-
-
     [
-        scoreElement,
-        levelElement,
-        detailScore,
-        detailLevel
+        document.getElementById("riskScore"),
+        document.getElementById("riskLevel"),
+        document.getElementById("riskScoreDetail"),
+        document.getElementById("riskLevelDetail")
     ].forEach(element => {
 
         if (element) {
@@ -1203,18 +1212,14 @@ function updateZones(alert) {
         "SAFE";
 
 
-    if (
-        alert.status === "DANGER"
-    ) {
+    if (alert.status === "DANGER") {
 
         currentStatus =
             "DANGER";
 
     }
 
-    else if (
-        alert.status === "WARNING"
-    ) {
+    else if (alert.status === "WARNING") {
 
         currentStatus =
             "WARNING";
@@ -1370,9 +1375,7 @@ function updateEvacuation(alert) {
 
 
     const safeZone =
-        getSafeZone(
-            worker.zone
-        );
+        getSafeZone(worker.zone);
 
 
     setText(
@@ -1380,12 +1383,10 @@ function updateEvacuation(alert) {
         "ZONE " + worker.zone
     );
 
-
     setText(
         "safeZone",
         safeZone
     );
-
 
     setText(
         "evacuationReason",
@@ -1398,42 +1399,45 @@ function updateEvacuation(alert) {
             "evacuationStatus"
         );
 
-
     const card =
         document.querySelector(
             ".evacuation-status-card"
         );
 
 
-    if (required) {
+    if (status) {
 
-        status.innerText =
-            "🚨 EVACUATION REQUIRED";
+        if (required) {
 
-        status.style.color =
-            "#ef4444";
+            status.innerText =
+                "🚨 EVACUATION REQUIRED";
 
-        if (card) {
-
-            card.style.borderColor =
+            status.style.color =
                 "#ef4444";
+
+            if (card) {
+
+                card.style.borderColor =
+                    "#ef4444";
+
+            }
 
         }
 
-    }
+        else {
 
-    else {
+            status.innerText =
+                "NO EVACUATION";
 
-        status.innerText =
-            "NO EVACUATION";
-
-        status.style.color =
-            "#22c55e";
-
-        if (card) {
-
-            card.style.borderColor =
+            status.style.color =
                 "#22c55e";
+
+            if (card) {
+
+                card.style.borderColor =
+                    "#22c55e";
+
+            }
 
         }
 
@@ -1477,9 +1481,7 @@ function updateAlertHistory(alert) {
         alert.reason;
 
 
-    if (
-        key === lastAlertKey
-    ) {
+    if (key === lastAlertKey) {
 
         return;
 
@@ -1490,11 +1492,7 @@ function updateAlertHistory(alert) {
         key;
 
 
-    // Don't flood table with SAFE updates
-
-    if (
-        alert.status === "SAFE"
-    ) {
+    if (alert.status === "SAFE") {
 
         return;
 
@@ -1530,9 +1528,7 @@ function updateAlertHistory(alert) {
     );
 
 
-    if (
-        alertHistory.length > 10
-    ) {
+    if (alertHistory.length > 10) {
 
         alertHistory.pop();
 
@@ -1545,7 +1541,7 @@ function updateAlertHistory(alert) {
 
 
 // ==========================================================
-// RENDER ALERT HISTORY
+// ALERT HISTORY UI
 // ==========================================================
 
 function renderAlertHistory() {
@@ -1598,9 +1594,7 @@ function renderAlertHistory() {
     });
 
 
-    if (
-        alertHistory.length === 0
-    ) {
+    if (alertHistory.length === 0) {
 
         table.innerHTML = `
 
@@ -1651,9 +1645,7 @@ function renderWorkers() {
         (worker, index) => {
 
             const card =
-                document.createElement(
-                    "div"
-                );
+                document.createElement("div");
 
 
             let workerStatus =
@@ -1723,6 +1715,11 @@ function renderWorkers() {
                     </div>
 
                     <div>
+                        <span>Location</span>
+                        <b>${Math.round(worker.x)}%, ${Math.round(worker.y)}%</b>
+                    </div>
+
+                    <div>
                         <span>Heart Rate</span>
                         <b>
                             ${
@@ -1738,11 +1735,6 @@ function renderWorkers() {
                         <b>${workerStatus}</b>
                     </div>
 
-                    <div>
-                        <span>Helmet</span>
-                        <b>🟢 Connected</b>
-                    </div>
-
                 </div>
 
             `;
@@ -1752,6 +1744,302 @@ function renderWorkers() {
 
         }
     );
+
+}
+
+
+// ==========================================================
+// MAP WORKER STATUS
+// ==========================================================
+
+function getWorkerMapStatus(index) {
+
+    if (index !== currentWorkerIndex) {
+
+        return "SAFE";
+
+    }
+
+
+    if (
+        sensorData.impact ||
+        sensorData.heartRate >= 120 ||
+        sensorData.temperature >= 40 ||
+        sensorData.gas >= 1200
+    ) {
+
+        return "DANGER";
+
+    }
+
+
+    if (
+        sensorData.heartRate >= 105 ||
+        sensorData.noMotion ||
+        sensorData.pressure < 850
+    ) {
+
+        return "WARNING";
+
+    }
+
+
+    return "SAFE";
+
+}
+
+
+// ==========================================================
+// RENDER LIVE MAP
+// ==========================================================
+
+function renderLiveMap() {
+
+    const markerContainer =
+        document.getElementById(
+            "workerMarkers"
+        );
+
+    const workerList =
+        document.getElementById(
+            "mapWorkerList"
+        );
+
+
+    if (!markerContainer || !workerList) {
+
+        return;
+
+    }
+
+
+    markerContainer.innerHTML = "";
+
+    workerList.innerHTML = "";
+
+
+    workers.forEach(
+        (worker, index) => {
+
+            const status =
+                getWorkerMapStatus(index);
+
+
+            // -------------------------------
+            // MARKER
+            // -------------------------------
+
+            const marker =
+                document.createElement("div");
+
+
+            marker.className =
+                "worker-marker " +
+                status.toLowerCase();
+
+
+            if (
+                index === selectedMapWorker
+            ) {
+
+                marker.classList.add("selected");
+
+            }
+
+
+            marker.style.left =
+                worker.x + "%";
+
+            marker.style.top =
+                worker.y + "%";
+
+
+            marker.innerHTML = `
+
+                👷
+
+                <span class="worker-marker-label">
+                    ${worker.id}
+                </span>
+
+            `;
+
+
+            marker.addEventListener(
+                "click",
+                () => {
+
+                    selectedMapWorker =
+                        index;
+
+                    showSelectedWorker(index);
+
+                    renderLiveMap();
+
+                }
+            );
+
+
+            markerContainer.appendChild(
+                marker
+            );
+
+
+            // -------------------------------
+            // LIST ITEM
+            // -------------------------------
+
+            const item =
+                document.createElement("div");
+
+
+            item.className =
+                "map-worker-item";
+
+
+            item.innerHTML = `
+
+                <span class="map-worker-dot ${status.toLowerCase()}"></span>
+
+                <div class="map-worker-text">
+
+                    <strong>
+                        ${worker.id} - ${worker.name}
+                    </strong>
+
+                    <span>
+                        Zone ${worker.zone} •
+                        ${Math.round(worker.x)}%, ${Math.round(worker.y)}%
+                    </span>
+
+                </div>
+
+            `;
+
+
+            item.addEventListener(
+                "click",
+                () => {
+
+                    selectedMapWorker =
+                        index;
+
+                    showSelectedWorker(index);
+
+                    renderLiveMap();
+
+                }
+            );
+
+
+            workerList.appendChild(
+                item
+            );
+
+        }
+    );
+
+
+    showSelectedWorker(
+        selectedMapWorker
+    );
+
+}
+
+
+// ==========================================================
+// SELECTED WORKER
+// ==========================================================
+
+function showSelectedWorker(index) {
+
+    const worker =
+        workers[index];
+
+
+    const status =
+        getWorkerMapStatus(index);
+
+
+    const info =
+        document.getElementById(
+            "selectedWorkerInfo"
+        );
+
+
+    if (!info || !worker) {
+
+        return;
+
+    }
+
+
+    let heart =
+        index === currentWorkerIndex
+            ? sensorData.heartRate
+            : randomBetween(65, 90);
+
+
+    info.innerHTML = `
+
+        <div class="selected-worker-title">
+            👷 ${worker.id}
+        </div>
+
+        <div class="selected-worker-row">
+            <span>Name</span>
+            <b>${worker.name}</b>
+        </div>
+
+        <div class="selected-worker-row">
+            <span>Zone</span>
+            <b>ZONE ${worker.zone}</b>
+        </div>
+
+        <div class="selected-worker-row">
+            <span>Location</span>
+            <b>${Math.round(worker.x)}%, ${Math.round(worker.y)}%</b>
+        </div>
+
+        <div class="selected-worker-row">
+            <span>Heart Rate</span>
+            <b>${heart} BPM</b>
+        </div>
+
+        <div class="selected-worker-row">
+            <span>Battery</span>
+            <b>${worker.battery}%</b>
+        </div>
+
+        <div class="selected-worker-row">
+            <span>Status</span>
+            <b>${getStatusText(status)}</b>
+        </div>
+
+    `;
+
+}
+
+
+// ==========================================================
+// STATUS TEXT
+// ==========================================================
+
+function getStatusText(status) {
+
+    if (status === "DANGER") {
+
+        return "🔴 DANGER";
+
+    }
+
+    if (status === "WARNING") {
+
+        return "🟡 WARNING";
+
+    }
+
+    return "🟢 SAFE";
 
 }
 
@@ -1814,20 +2102,17 @@ function initializeCharts() {
             "Temperature (°C)"
         );
 
-
     gasChart =
         createChart(
             gasCanvas,
             "Gas Level"
         );
 
-
     pressureChart =
         createChart(
             pressureCanvas,
             "Pressure (hPa)"
         );
-
 
     heartChart =
         createChart(
@@ -1942,7 +2227,7 @@ function updateCharts() {
 
 
 // ==========================================================
-// CHART POINT
+// ADD CHART POINT
 // ==========================================================
 
 function addChartPoint(
@@ -1996,6 +2281,8 @@ function runSimulation() {
 
     generateDummySensors();
 
+    updateWorkerLocations();
+
     updateCurrentWorker();
 
     updateSensorUI();
@@ -2022,6 +2309,24 @@ function runSimulation() {
     renderWorkers();
 
     updateCharts();
+
+
+    // Update map if currently visible
+
+    const liveMap =
+        document.getElementById(
+            "liveMap"
+        );
+
+
+    if (
+        liveMap &&
+        liveMap.classList.contains("active")
+    ) {
+
+        renderLiveMap();
+
+    }
 
 }
 

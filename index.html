@@ -62,6 +62,10 @@
         🤖 AI Risk
     </button>
 
+    <button class="nav-btn" onclick="showTab('liveMap')">
+        📍 Live Map
+    </button>
+
     <button class="nav-btn" onclick="showTab('zones')">
         🗺️ Zones
     </button>
@@ -85,8 +89,13 @@
 <section id="dashboard" class="tab-content active">
 
     <div class="page-title">
+
         <h2>🏠 Dashboard Overview</h2>
-        <p>Real-time simulated mine safety monitoring and AI analysis</p>
+
+        <p>
+            Real-time simulated mine safety monitoring and AI analysis
+        </p>
+
     </div>
 
 
@@ -177,7 +186,7 @@
 
             <div>
                 <span>Battery</span>
-                <b id="battery">100%</b>
+                <b id="battery">96%</b>
             </div>
 
             <div>
@@ -254,8 +263,13 @@
 <section id="worker" class="tab-content">
 
     <div class="page-title">
+
         <h2>👷 Worker Monitoring</h2>
-        <p>Monitoring 10 workers equipped with HazardShield safety jackets</p>
+
+        <p>
+            Monitoring 10 workers equipped with HazardShield safety jackets
+        </p>
+
     </div>
 
     <div class="worker-grid" id="workerGrid"></div>
@@ -268,8 +282,13 @@
 <section id="sensors" class="tab-content">
 
     <div class="page-title">
+
         <h2>📡 Live Sensors</h2>
-        <p>Real-time simulated environmental and worker sensor data</p>
+
+        <p>
+            Real-time simulated environmental and worker sensor data
+        </p>
+
     </div>
 
     <div class="sensor-grid">
@@ -415,7 +434,6 @@
 
         </div>
 
-
         <div class="graph">
 
             <h2>💨 Gas Graph</h2>
@@ -426,7 +444,6 @@
 
         </div>
 
-
         <div class="graph">
 
             <h2>🌪 Pressure Graph</h2>
@@ -436,7 +453,6 @@
             </div>
 
         </div>
-
 
         <div class="graph">
 
@@ -497,7 +513,6 @@
 
         </div>
 
-
         <div class="ai-card">
 
             <h3>🎯 Prediction Confidence</h3>
@@ -508,7 +523,6 @@
 
         </div>
 
-
         <div class="ai-card">
 
             <h3>💡 Recommended Action</h3>
@@ -516,6 +530,114 @@
             <h2 id="recommendedActionDetail">
                 Normal Monitoring
             </h2>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= LIVE MAP ================= -->
+
+<section id="liveMap" class="tab-content">
+
+    <div class="page-title">
+
+        <h2>📍 Live Worker Location Map</h2>
+
+        <p>
+            Real-time simulated location tracking of all HazardShield workers
+        </p>
+
+    </div>
+
+
+    <div class="live-map-layout">
+
+        <div class="live-map-card">
+
+            <div class="map-header">
+
+                <div>
+
+                    <h2>🗺️ Mine Location Tracking</h2>
+
+                    <p>
+                        Live worker positions
+                    </p>
+
+                </div>
+
+                <div class="map-live-status">
+                    🟢 LIVE SIMULATION
+                </div>
+
+            </div>
+
+
+            <div class="map-view" id="workerMap">
+
+                <div class="map-road road-1"></div>
+                <div class="map-road road-2"></div>
+                <div class="map-road road-3"></div>
+                <div class="map-road road-4"></div>
+
+                <div class="map-zone-label zone-label-a">
+                    ZONE A
+                </div>
+
+                <div class="map-zone-label zone-label-b">
+                    ZONE B
+                </div>
+
+                <div class="map-zone-label zone-label-c">
+                    ZONE C
+                </div>
+
+                <div class="map-zone-label zone-label-d">
+                    ZONE D
+                </div>
+
+                <div class="map-compass">
+                    N<br>
+                    ↑
+                </div>
+
+                <div class="map-scale">
+                    100 m
+                </div>
+
+                <div id="workerMarkers"></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="map-side-panel">
+
+            <div class="map-info-card">
+
+                <h2>👷 Workers on Map</h2>
+
+                <div id="mapWorkerList"></div>
+
+            </div>
+
+            <div class="map-info-card selected-worker-card">
+
+                <h2>📍 Selected Worker</h2>
+
+                <div id="selectedWorkerInfo">
+
+                    <p>
+                        Click a worker marker to view details.
+                    </p>
+
+                </div>
+
+            </div>
 
         </div>
 

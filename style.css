@@ -228,7 +228,7 @@ header {
 }
 
 
-/* SENSOR MINI */
+/* MINI SENSOR */
 
 .mini-sensors {
     display: grid;
@@ -490,6 +490,490 @@ header {
 }
 
 
+/* =====================================================
+   LIVE WORKER MAP
+===================================================== */
+
+.live-map-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 20px;
+}
+
+.live-map-card,
+.map-info-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .25);
+}
+
+.map-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.map-header h2 {
+    color: #38bdf8;
+    margin-bottom: 5px;
+}
+
+.map-header p {
+    color: #94a3b8;
+}
+
+.map-live-status {
+    background: #14532d;
+    color: #86efac;
+    border: 1px solid #22c55e;
+    padding: 9px 13px;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+
+/* MAP AREA */
+
+.map-view {
+    position: relative;
+    height: 620px;
+    overflow: hidden;
+    border-radius: 14px;
+    border: 2px solid #475569;
+
+    /* Map-like dark terrain */
+    background:
+        radial-gradient(
+            circle at 20% 25%,
+            rgba(34, 197, 94, .10),
+            transparent 20%
+        ),
+        radial-gradient(
+            circle at 75% 70%,
+            rgba(56, 189, 248, .10),
+            transparent 22%
+        ),
+        linear-gradient(
+            135deg,
+            #172033 0%,
+            #111827 45%,
+            #172033 100%
+        );
+}
+
+
+/* Map grid */
+
+.map-view::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background-image:
+        linear-gradient(
+            rgba(148, 163, 184, .08) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(148, 163, 184, .08) 1px,
+            transparent 1px
+        );
+
+    background-size: 42px 42px;
+
+    pointer-events: none;
+}
+
+
+/* Terrain patches */
+
+.map-view::after {
+    content: "";
+    position: absolute;
+    inset: 30px;
+
+    border: 1px dashed rgba(148, 163, 184, .16);
+    border-radius: 35px;
+
+    pointer-events: none;
+}
+
+
+/* MAP ROADS */
+
+.map-road {
+    position: absolute;
+    background: #334155;
+    border: 2px solid #64748b;
+    opacity: .8;
+    z-index: 1;
+}
+
+.road-1 {
+    width: 85%;
+    height: 22px;
+    left: 7%;
+    top: 48%;
+    transform: rotate(-10deg);
+    border-radius: 20px;
+}
+
+.road-2 {
+    width: 18px;
+    height: 80%;
+    left: 43%;
+    top: 10%;
+    transform: rotate(8deg);
+    border-radius: 20px;
+}
+
+.road-3 {
+    width: 65%;
+    height: 18px;
+    left: 18%;
+    top: 25%;
+    transform: rotate(25deg);
+    border-radius: 20px;
+}
+
+.road-4 {
+    width: 55%;
+    height: 16px;
+    left: 30%;
+    top: 72%;
+    transform: rotate(-28deg);
+    border-radius: 20px;
+}
+
+
+/* ZONE LABELS */
+
+.map-zone-label {
+    position: absolute;
+    z-index: 3;
+
+    padding: 8px 13px;
+    border-radius: 8px;
+
+    background: rgba(15, 23, 42, .86);
+    border: 1px solid #475569;
+
+    color: #cbd5e1;
+    font-size: 12px;
+    font-weight: bold;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
+}
+
+.zone-label-a {
+    left: 10%;
+    top: 17%;
+}
+
+.zone-label-b {
+    right: 12%;
+    top: 30%;
+}
+
+.zone-label-c {
+    left: 12%;
+    bottom: 20%;
+}
+
+.zone-label-d {
+    right: 10%;
+    bottom: 13%;
+    border-color: #22c55e;
+    color: #86efac;
+}
+
+
+/* COMPASS */
+
+.map-compass {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+
+    width: 55px;
+    height: 55px;
+
+    border-radius: 50%;
+
+    background: rgba(15, 23, 42, .9);
+    border: 2px solid #64748b;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 5;
+
+    color: #f8fafc;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+
+/* SCALE */
+
+.map-scale {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+
+    padding: 7px 12px;
+
+    background: rgba(15, 23, 42, .9);
+    border: 1px solid #475569;
+    border-radius: 7px;
+
+    color: #cbd5e1;
+    font-size: 12px;
+
+    z-index: 5;
+}
+
+
+/* WORKER MARKERS */
+
+#workerMarkers {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+}
+
+.worker-marker {
+    position: absolute;
+
+    width: 42px;
+    height: 42px;
+
+    transform: translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    font-size: 19px;
+
+    background: #22c55e;
+    border: 3px solid #dcfce7;
+
+    box-shadow:
+        0 0 0 5px rgba(34, 197, 94, .18),
+        0 5px 15px rgba(0, 0, 0, .45);
+
+    transition:
+        left .8s ease,
+        top .8s ease,
+        transform .2s ease,
+        background .2s ease;
+
+}
+
+.worker-marker:hover {
+    transform: translate(-50%, -50%) scale(1.18);
+    z-index: 30;
+}
+
+.worker-marker.warning {
+    background: #f59e0b;
+    border-color: #fef3c7;
+
+    box-shadow:
+        0 0 0 5px rgba(245, 158, 11, .18),
+        0 5px 15px rgba(0, 0, 0, .45);
+}
+
+.worker-marker.danger {
+    background: #ef4444;
+    border-color: #fee2e2;
+
+    animation: markerPulse 1s infinite;
+
+    box-shadow:
+        0 0 0 6px rgba(239, 68, 68, .2),
+        0 5px 18px rgba(0, 0, 0, .55);
+}
+
+.worker-marker.selected {
+    outline: 3px solid #38bdf8;
+    outline-offset: 4px;
+}
+
+
+/* Marker label */
+
+.worker-marker-label {
+    position: absolute;
+
+    left: 50%;
+    top: 47px;
+
+    transform: translateX(-50%);
+
+    white-space: nowrap;
+
+    background: rgba(15, 23, 42, .94);
+    border: 1px solid #475569;
+
+    padding: 5px 8px;
+    border-radius: 6px;
+
+    color: #f8fafc;
+    font-size: 10px;
+    font-weight: bold;
+
+    pointer-events: none;
+}
+
+
+/* MAP WORKER LIST */
+
+.map-info-card h2 {
+    color: #38bdf8;
+    margin-bottom: 15px;
+}
+
+#mapWorkerList {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    max-height: 390px;
+    overflow-y: auto;
+}
+
+.map-worker-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 11px;
+
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 9px;
+
+    cursor: pointer;
+    transition: .2s;
+}
+
+.map-worker-item:hover {
+    border-color: #38bdf8;
+    background: #172033;
+}
+
+.map-worker-dot {
+    width: 11px;
+    height: 11px;
+    min-width: 11px;
+    border-radius: 50%;
+    background: #22c55e;
+}
+
+.map-worker-dot.warning {
+    background: #f59e0b;
+}
+
+.map-worker-dot.danger {
+    background: #ef4444;
+}
+
+.map-worker-text {
+    flex: 1;
+}
+
+.map-worker-text strong {
+    display: block;
+    color: #f8fafc;
+    font-size: 13px;
+}
+
+.map-worker-text span {
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+
+/* SELECTED WORKER */
+
+.selected-worker-card {
+    margin-top: 20px;
+}
+
+#selectedWorkerInfo {
+    background: #0f172a;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    padding: 15px;
+}
+
+.selected-worker-title {
+    color: #38bdf8;
+    font-size: 18px;
+    margin-bottom: 12px;
+}
+
+.selected-worker-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+
+    padding: 8px 0;
+
+    border-bottom: 1px solid #334155;
+
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.selected-worker-row:last-child {
+    border-bottom: none;
+}
+
+.selected-worker-row b {
+    color: #f8fafc;
+}
+
+
+/* MAP MARKER ANIMATION */
+
+@keyframes markerPulse {
+
+    0% {
+        box-shadow:
+            0 0 0 3px rgba(239, 68, 68, .15),
+            0 0 12px rgba(239, 68, 68, .6);
+    }
+
+    50% {
+        box-shadow:
+            0 0 0 10px rgba(239, 68, 68, .05),
+            0 0 28px rgba(239, 68, 68, .9);
+    }
+
+    100% {
+        box-shadow:
+            0 0 0 3px rgba(239, 68, 68, .15),
+            0 0 12px rgba(239, 68, 68, .6);
+    }
+
+}
+
+
 /* ZONES */
 
 .zone-grid {
@@ -566,7 +1050,7 @@ header {
 }
 
 
-/* MAP */
+/* OLD EVACUATION MAP */
 
 .mine-map-card {
     background: #1e293b;
@@ -715,6 +1199,10 @@ footer {
         grid-template-columns: repeat(2, 1fr);
     }
 
+    .live-map-layout {
+        grid-template-columns: 1fr;
+    }
+
 }
 
 @media (max-width: 900px) {
@@ -805,6 +1293,15 @@ footer {
 
     .route {
         transform: rotate(90deg);
+    }
+
+    .map-view {
+        height: 500px;
+    }
+
+    .map-header {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
 }
