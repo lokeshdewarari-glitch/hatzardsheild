@@ -18,6 +18,10 @@ let simulationTick = 0;
 
 let selectedMapWorker = 0;
 
+// --- GPS SIMULATION DATA ---
+let currentLat = 30.0668;
+let currentLng = 79.0193;
+
 
 // ==========================================================
 // 10 WORKERS
@@ -372,7 +376,14 @@ function generateDummySensors() {
 
     }
 
-}
+
+    // --- GPS DRIFT SIMULATION (EVERY TICK) ---
+    currentLat += (Math.random() - 0.5) * 0.0002;
+    currentLng += (Math.random() - 0.5) * 0.0002;
+    const currentGpsStr = `${currentLat.toFixed(4)}, ${currentLng.toFixed(4)}`;
+
+    
+    }
 
 
 // ==========================================================
@@ -564,7 +575,11 @@ function updateSensorUI() {
         "heartCurrent",
         heart + " BPM"
     );
-
+    
+const gpsElem = document.getElementById("gpsLocation");
+    if (gpsElem) {
+        gpsElem.textContent = `${currentLat.toFixed(4)}, ${currentLng.toFixed(4)}`;
+    );
 
     updateHeartStatus();
 
@@ -739,7 +754,7 @@ function calculateAlert() {
 
         status =
             "WARNING";
-
+run
         reason =
             "Elevated Heart Rate";
 
